@@ -1,28 +1,28 @@
 module.exports = app => {
-  const user = require("../controllers/user.controller.js");
+  const item = require("../controllers/item.controller.js");
 
   var router = require("express").Router();
 
-  // Create a new User
-  router.post("/", user.create);
+  // Create a new Item
+  router.post("/", item.create);
 
-  // Retrieve all Users
-  router.get("/", user.findAll);
+  // Retrieve all Items
+  router.get("/", item.findAll);
 
-  // Retrieve all published Users
-  // router.get("/published", user.findAllPublished);
+  // Retrieve all published Items
+  // router.get("/published", item.findAllPublished);
 
-  // Retrieve a single User with id
-  router.get("/:id", user.findOne);
+  // Retrieve a single Item with id
+  router.get("/:id", item.findOne);
 
-  // Update a User with id
-  router.put("/:id", user.update);
+  // Update a Item with id
+  router.put("/:id", item.update);
 
-  // Delete a User with id
-  router.delete("/:id", user.delete);
+  // Delete a Item with id
+  router.delete("/:id", item.delete);
 
-  // Create a new User
-  router.delete("/", user.deleteAll);
+  // Create a new Item
+  router.delete("/", item.deleteAll);
 
-  app.use("/api/user", router);
+  app.use("/api/item", router);
 };

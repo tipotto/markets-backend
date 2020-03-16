@@ -1,8 +1,9 @@
-const db = require("../models/index");
-const User = db.user;
-const Op = db.Sequelize.Op;
+const db = require("../models");
+const UserService = require("../services/user.service");
 
-// Create and Save a new User
+/**
+ * ユーザー作成
+ */
 exports.create = (req, res) => {
   // Validate request
   // if (!req.body.title) {
@@ -12,132 +13,52 @@ exports.create = (req, res) => {
   //   return;
   // }
 
-  // Create User
   const user = {
     name: req.body.name,
     email: req.body.email,
     password: req.body.password
-    // published: req.body.published ? req.body.published : false
   };
 
-  // Save User in the database
-  User.create(user)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the user."
-      });
-    });
+  UserService.init(res).createUser(user);
 };
 
-// Retrieve all users from the database.
+/**
+ * ユーザー一覧の取得
+ */
 exports.findAll = (req, res) => {
   // const name = req.query.name;
   // var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
-  User.findAll({ where: {} })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving users."
-      });
-    });
+  UserService.init(res).findAll();
 };
 
-// Find a single User with an id
+/**
+ * 特定のユーザーを取得
+ */
 exports.findOne = (req, res) => {
   const id = req.params.id;
-
-  User.findByPk(id)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error retrieving User with id=" + id
-      });
-    });
+  UserService.init(res).findOne(id);
 };
 
-// Update a User by the id in the request
+/**
+ * ユーザー情報の更新
+ */
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  User.update(req.body, {
-    where: { id: id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "User was updated successfully."
-        });
-      } else {
-        res.send({
-          message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating User with id=" + id
-      });
-    });
+  UserService.init(res).update(id, req);
 };
 
-// Delete a User with the specified id in the request
+/**
+ * 特定のユーザーの削除
+ */
 exports.delete = (req, res) => {
   const id = req.params.id;
-
-  User.destroy({
-    where: { id: id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "User was deleted successfully!"
-        });
-      } else {
-        res.send({
-          message: `Cannot delete User with id=${id}. Maybe User was not found!`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Could not delete User with id=" + id
-      });
-    });
+  UserService.init(res).delete(id);
 };
 
-// Delete all Users from the database.
+/**
+ * 全てのユーザーを削除
+ */
 exports.deleteAll = (req, res) => {
-  User.destroy({
-    where: {},
-    truncate: false
-  })
-    .then(nums => {
-      res.send({ message: `${nums} Users were deleted successfully!` });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while removing all users."
-      });
-    });
+  UserService.init(res).deleteAll();
 };
-
-// Find all published Users
-// exports.findAllPublished = (req, res) => {
-//   User.findAll({ where: { published: true } })
-//     .then(data => {
-//       res.send(data);
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: err.message || "Some error occurred while retrieving users."
-//       });
-//     });
-// };
