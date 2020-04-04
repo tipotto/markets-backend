@@ -1,8 +1,9 @@
 const db = require("../models");
-const Item = db.item;
-// const Op = db.Sequelize.Op;
+const ItemService = require("../services/item.service");
 
-// Create and Save a new Item
+/**
+ * アイテム作成
+ */
 exports.create = (req, res) => {
   // Validate request
   // if (!req.body.title) {
@@ -12,130 +13,52 @@ exports.create = (req, res) => {
   //   return;
   // }
 
-  // Create Item
   const item = {
     title: req.body.title,
-    description: req.body.description
+    description: req.body.description,
+    userId: req.body.userId
   };
 
-  // Save Item in the database
-  Item.create(item)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while creating the item."
-      });
-    });
+  ItemService.init(res).create(item);
 };
 
-// Retrieve all items from the database.
+/**
+ * アイテム一覧の取得
+ */
 exports.findAll = (req, res) => {
   // const name = req.query.name;
   // var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
 
-  Item.findAll({ where: {} })
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving items."
-      });
-    });
+  ItemService.init(res).findAll();
 };
 
-// Find a single Item with an id
+/**
+ * 特定のアイテムを取得
+ */
 exports.findOne = (req, res) => {
   const id = req.params.id;
-
-  Item.findByPk(id)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error retrieving Item with id=" + id
-      });
-    });
+  ItemService.init(res).findOne(id);
 };
 
-// Update a Item by the id in the request
+/**
+ * アイテム情報の更新
+ */
 exports.update = (req, res) => {
   const id = req.params.id;
-
-  Item.update(req.body, {
-    where: { id: id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Item was updated successfully."
-        });
-      } else {
-        res.send({
-          message: `Cannot update Item with id=${id}. Maybe Item was not found or req.body is empty!`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error updating Item with id=" + id
-      });
-    });
+  ItemService.init(res).update(id, req);
 };
 
-// Delete a Item with the specified id in the request
+/**
+ * 特定のアイテムの削除
+ */
 exports.delete = (req, res) => {
   const id = req.params.id;
-
-  Item.destroy({
-    where: { id: id }
-  })
-    .then(num => {
-      if (num == 1) {
-        res.send({
-          message: "Item was deleted successfully!"
-        });
-      } else {
-        res.send({
-          message: `Cannot delete Item with id=${id}. Maybe Item was not found!`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Could not delete Item with id=" + id
-      });
-    });
+  ItemService.init(res).delete(id);
 };
 
-// Delete all Items from the database.
+/**
+ * 全てのアイテムを削除
+ */
 exports.deleteAll = (req, res) => {
-  Item.destroy({
-    where: {},
-    truncate: false
-  })
-    .then(nums => {
-      res.send({ message: `${nums} Items were deleted successfully!` });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while removing all items."
-      });
-    });
+  ItemService.init(res).deleteAll();
 };
-
-// Find all published Items
-// exports.findAllPublished = (req, res) => {
-//   Item.findAll({ where: { published: true } })
-//     .then(data => {
-//       res.send(data);
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: err.message || "Some error occurred while retrieving items."
-//       });
-//     });
-// };

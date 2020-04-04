@@ -1,44 +1,49 @@
 module.exports = (sequelize, Sequelize) => {
-  const User = sequelize.define(
-    "user",
+  const Search = sequelize.define(
+    "items",
     {
       // id, createdAt, updatedAt はデフォルトで設定される。
       // id: not null, primary key, auto_increment
       // name, email, password: デフォルトでは varchar(255) が設定され、
       // not nullではないので注意。
-      userId: {
+
+      // id: {
+      //   type: Sequelize.INTEGER,
+      //   primaryKey: true,
+      //   autoIncrement: true,
+      //   allowNull: false
+      // },
+      title: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      price: {
         type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
         allowNull: false
       },
-      name: {
-        type: Sequelize.STRING,
+      imageUrl: {
+        type: Sequelize.TEXT,
         allowNull: false
       },
-      email: {
-        type: Sequelize.STRING,
-        unique: true,
+      itemUrl: {
+        type: Sequelize.TEXT,
         allowNull: false
       },
-      password: {
+      platform: {
         type: Sequelize.STRING,
         allowNull: false
       }
     },
     {
       freezeTableName: false,
-      timestamps: true,
+      timestamps: false,
       indexes: [
         {
-          fields: ["userId"]
-        },
-        {
-          fields: ["email"]
+          fields: ["price"]
         }
       ]
     }
   );
 
-  return User;
+  return Search;
 };
