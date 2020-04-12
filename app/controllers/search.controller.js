@@ -6,36 +6,37 @@ const Key = require("../constants/user");
 exports.search = (req, res) => {
   const keyword = req.body.keyword;
   const pfArray = req.body.platform;
-  const itemLimit = req.body.itemLimit;
+  const resultNum = Number(req.body.resultNum);
   const sortIndex = req.body.sortIndex;
   const sortOrder = req.body.sortOrder;
 
-  const hasPlatform = (strPfName, pfArray) => {
-    if (pfArray.includes(strPfName)) return true;
-    return false;
-  };
+  console.log("keyword: " + keyword);
+  console.log("pfArray: " + pfArray);
+  console.log("resultNum: " + resultNum);
+  console.log("sortIndex: " + sortIndex);
+  console.log("sortOrder: " + sortOrder);
 
   const scraping = (keyword, pfArray) => {
     var promiseArray = [];
 
-    if (hasPlatform("mercari", pfArray)) {
+    if (pfArray.includes("mercari")) {
       promiseArray.push(SearchService.mercari(keyword));
     }
 
-    if (hasPlatform("rakuten", pfArray)) {
+    if (pfArray.includes("rakuten")) {
       promiseArray.push(SearchService.rakuten(keyword));
     }
 
     return promiseArray;
   };
 
-  Promise.all(scraping(keyword, pfArray)).then(data => {
+  Promise.all(scraping(keyword, pfArray)).then((data) => {
     console.log("Promiseオブジェクト：" + data);
 
     const service = SearchService.init(res);
     service
-      .findAll(itemLimit, sortIndex, sortOrder)
-      .then(items => {
+      .findAll(resultNum, sortIndex, sortOrder)
+      .then((items) => {
         console.log("promiseオブジェクト（空でない場合）：" + items);
         console.log("アイテムリストを取得しました。");
         res.status(Key.FETCH.SUCCESS.httpResCode).send(items);
@@ -44,7 +45,7 @@ exports.search = (req, res) => {
         // initメソッドを使わずstaticメソッドにしても良いかも？
         // res.status(200).send(items);
       })
-      .then(items => {
+      .then((items) => {
         console.log("promiseオブジェクト（空の場合）：" + items);
         console.log("アイテムリストを全て削除しました。");
         // Sequelize.close
@@ -53,7 +54,7 @@ exports.search = (req, res) => {
         // しなくても、プール側で処理してくれる。
         // db.sequelize.close();
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("promiseオブジェクト（エラーの場合）：" + err);
         // res.status(Key.FETCH.FAIL.httpResCode).send({
         //   message: err.message

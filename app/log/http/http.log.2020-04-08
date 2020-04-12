@@ -1,0 +1,25 @@
+[2020-04-08T15:54:29.166] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '10',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-08T16:05:05.382] [INFO] http - { keyword: '日向坂 渡邉美穂 写真',
+  platform: [ 'mercari', 'rakuten' ],
+  itemLimit: 6,
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-08T16:06:57.478] [INFO] http - { keyword: '遊戯王',
+  platform: [ 'mercari', 'rakuten' ],
+  itemLimit: 6,
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-08T18:50:57.966] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'mercari' ],
+  resultNum: '10',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-08T18:59:58.239] [INFO] http - { keyword: '遊戯王',
+  platform: [ 'rakuten' ],
+  itemLimit: 10,
+  sortIndex: 'price',
+  sortOrder: 'ASC' }

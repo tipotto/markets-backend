@@ -1,0 +1,20 @@
+[2020-04-09T15:15:24.904] [INFO] http - { keyword: '日向坂',
+  platform: [ 'mercari' ],
+  itemLimit: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-09T15:22:12.243] [INFO] http - { keyword: '日向坂',
+  platform: [ 'mercari' ],
+  itemLimit: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-09T15:52:15.078] [INFO] http - { keyword: '日向坂46　渡邉美穂',
+  platform: [ 'mercari' ],
+  itemLimit: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-09T15:58:37.606] [INFO] http - { keyword: '斎藤飛鳥',
+  platform: [ 'mercari', 'rakuten' ],
+  itemLimit: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }

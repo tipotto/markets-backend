@@ -22,10 +22,13 @@ url = 'mysql+pymysql://{user}:{password}@{host}/{database}?charset=utf8'.format(
 
 engine = create_engine(url, echo=False)
 
+socks = 'socks5://127.0.0.1:9001'
+
 options = Options()
 options.binary_location = '/usr/bin/google-chrome'
 options.add_argument('--headless')
 options.add_argument('--window-size=1280,1024')
+options.add_argument(f'--proxy-server={socks}')
 
 # 引数から取得 実行例：python merscraping.py
 query = sys.stdin.readline()
@@ -44,8 +47,8 @@ df = pandas.DataFrame(columns=columns)
 # time.sleep(1)
 items = browser.find_elements_by_css_selector(".item")
 
-item_num = 3
-item_limit = 5
+item_num = 0
+item_limit = 0
 
 try:
     for item in items:

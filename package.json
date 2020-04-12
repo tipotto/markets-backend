@@ -1,0 +1,23 @@
+{
+  "name": "my-app-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:tipotto/my-app-server.git",
+  "author": "tipotto <label1134@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js",
+    "server": "cd ~/multitor && sudo multitor --init 2 --user debian-tor --socks-port 9000 --control-port 9900 && cd ~/workspace/react/my-app-server && node server.js",
+    "dev:server": "yarn run nodemon server.js",
+    "dev:client": "yarn --cwd ../my-app start",
+    "dev": "yarn run npm-run-all -p dev:*"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2",
+    "npm-run-all": "^4.1.5"
+  },
+  "dependencies": {
+    "concurrently": "^5.1.0",
+    "forever": "^2.0.0"
+  }
+}

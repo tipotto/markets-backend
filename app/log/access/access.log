@@ -1,3 +1,3 @@
-[2020-04-04T10:08:47.419] [INFO] access - ::ffff:10.0.2.2 - - "POST /api/search HTTP/1.1" 200 1076 "" "PostmanRuntime/7.23.0"
-[2020-04-04T10:16:54.253] [INFO] access - ::ffff:10.0.2.2 - - "POST /api/search HTTP/1.1" 200 1962 "" "PostmanRuntime/7.23.0"
-[2020-04-04T10:47:52.446] [INFO] access - ::ffff:10.0.2.2 - - "POST /api/search HTTP/1.1" 200 1860 "" "PostmanRuntime/7.23.0"
+[2020-04-10T14:50:39.390] [INFO] access - ::ffff:10.0.2.2 - - "POST /api/search HTTP/1.1" 200 608 "" "PostmanRuntime/7.23.0"
+[2020-04-10T15:01:23.540] [INFO] access - ::ffff:10.0.2.2 - - "POST /api/search HTTP/1.1" 200 618 "" "PostmanRuntime/7.23.0"
+[2020-04-10T16:06:24.224] [INFO] access - ::ffff:10.0.2.2 - - "POST /api/search HTTP/1.1" 200 651 "" "PostmanRuntime/7.23.0"

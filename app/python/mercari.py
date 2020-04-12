@@ -23,10 +23,13 @@ url = 'mysql+pymysql://{user}:{password}@{host}/{database}?charset=utf8'.format(
 
 engine = create_engine(url, echo=False)
 
+socks = 'socks5://127.0.0.1:9000'
+
 options = Options()
 options.binary_location = '/usr/bin/google-chrome'
 options.add_argument('--headless')
 options.add_argument('--window-size=1280,1024')
+options.add_argument(f'--proxy-server={socks}')
 
 # TODO メルカリとラクマでスクレイピング処理を共通化する。
 # node.jsからオブジェクトを渡すようにし、cssセレクタやアクセス先のURL、
@@ -48,7 +51,7 @@ df = pandas.DataFrame(columns=columns)
 # time.sleep(1)
 items = browser.find_elements_by_css_selector(".items-box")
 item_num = 0
-item_limit = 2
+item_limit = 0
 
 try:
     for item in items:

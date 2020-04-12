@@ -142,17 +142,17 @@ module.exports = class SearchService {
 
   /**
    * アイテムリストの取得
-   * @param {*} itemLimit
+   * @param {*} resultNum
    * @param {*} sortIndex
    * @param {*} sortOrder
    */
-  // itemLimit: number (検索結果の取得上限数)
+  // resultNum: number (検索結果の取得上限数)
   // sortIndex: string (title, price, platform etc.)
   // sortOrder: string (ASC/DESC)
-  findAll(itemLimit, sortIndex, sortOrder) {
+  findAll(resultNum, sortIndex, sortOrder) {
     return new Promise((resolve, reject) => {
       Search.findAll({
-        limit: itemLimit,
+        limit: resultNum,
         order: [[sortIndex, sortOrder]]
         // where: {}
       })
