@@ -1,17 +1,40 @@
+import traceback
 import sys
-import time
+# import time
 from selenium import webdriver
 import pandas
 from selenium.webdriver.chrome.options import Options
+from sqlalchemy import create_engine
+
+# データベースの接続情報
+# DBの接続処理に時間がかかっている可能性あり。
+# TODO 毎回接続するのはコストがかかるので、コネクションプールを利用することを検討。
+# TODO DBの接続やchromeDriverの処理は、別ファイルに切り出して共通化することを検討。
+db_config = {
+    'user': 'tipotto',
+    'password': 'L1keana5234',
+    'host': 'localhost',
+    # 'port': 'ポート番号',  # なくてもOK
+    'database': 'my_app'
+}
+
+url = 'mysql+pymysql://{user}:{password}@{host}/{database}?charset=utf8'.format(
+    **db_config)
+
+engine = create_engine(url, echo=False)
+
+socks = 'socks5://127.0.0.1:9000'
 
 options = Options()
 options.binary_location = '/usr/bin/google-chrome'
 options.add_argument('--headless')
 options.add_argument('--window-size=1280,1024')
+options.add_argument(f'--proxy-server={socks}')
 
-# 引数から取得 実行例：python merscraping.py
-args = sys.argv
-query = args[1]
+# TODO メルカリとラクマでスクレイピング処理を共通化する。
+# node.jsからオブジェクトを渡すようにし、cssセレクタやアクセス先のURL、
+# プラットフォーム名をconstantsに切り出すようにする。
+query = sys.stdin.readline()
 
 # 別途ダウンロードしたchromedriver.exeの場所を指定
 browser = webdriver.Chrome('chromedriver', options=options)
@@ -21,81 +44,59 @@ url_site = "https://www.mercari.com/jp/search/?keyword={}&status_on_sale=1".form
     query)
 browser.get(url_site)
 
-page = 1
-item_num = 0
-urls = []
-
-# 個別商品ページのURLを全取得
-while True:
-    print("Getting the page {}...".format(page))
-    time.sleep(1)
-    items = browser.find_elements_by_css_selector(".items-box")
-    for item in items:
-        item_num += 1
-        item_url = item.find_element_by_css_selector("a").get_attribute("href")
-        print("item{0} url:{1}".format(item_num, item_url))
-        urls.append(item_url)
-
-    page += 1
-    try:
-        next = browser.find_element_by_css_selector(
-            "li.pager-next .pager-cell:nth-child(1) a").get_attribute("href")
-        print("next url:{}".format(next))
-        print("Moving to the next page...")
-        browser.get(next)
-    except:
-        print("Last page!")
-        break
-
-# 取得した全URLをfor文で回す
-item_num = 0
-columns = ["title", "cat1", "cat2", "cat3", "brand", "state", "price", "url"]
+columns = ["title", "price", "imageUrl", "itemUrl", "platform"]
 df = pandas.DataFrame(columns=columns)
 
-try:  # エラーで途中終了しても途中までの分をcsvに書き出したいのでtry～except文
-    for url in urls:
+# 個別商品ページのURLを全取得
+# time.sleep(1)
+items = browser.find_elements_by_css_selector(".items-box")
+item_num = 0
+item_limit = 0
+
+try:
+    for item in items:
+        if item_num > item_limit:
+            break
+
         item_num += 1
-        print("Moving to the item{}...".format(item_num))
-        time.sleep(1)
-        browser.get(url)
 
-        title = browser.find_element_by_css_selector("h1.item-name").text
-        print("Getting the information of {}...".format(title))
+        # 商品名の取得
+        title = item.find_element_by_css_selector(
+            "a > div.items-box-body > h3").text
 
-        cat1_css = "table.item-detail-table tbody tr:nth-child(2) td a:nth-child(1) div"
-        cat2_css = "table.item-detail-table tbody tr:nth-child(2) td a:nth-child(2) div"
-        cat3_css = "table.item-detail-table tbody tr:nth-child(2) td a:nth-child(3) div"
+        print("title" + title)
 
-        cat1 = browser.find_element_by_css_selector(cat1_css).text
-        cat2 = browser.find_element_by_css_selector(cat2_css).text
-        cat3 = browser.find_element_by_css_selector(cat3_css).text
-        try:  # 存在しない⇒a, divタグがない場合があるのでtry～except文
-            brand = browser.find_element_by_css_selector(
-                "table.item-detail-table tbody tr:nth-child(3) td a div").text
-        except:
-            brand = ""
-        state = browser.find_element_by_css_selector(
-            "table.item-detail-table tbody tr:nth-child(4) td").text
-        price = browser.find_element_by_xpath(
-            "//div[1]/section/div[2]/span[1]").text  # PC表示
+        # 金額の取得
+        price = item.find_element_by_css_selector(
+            "a > div.items-box-body > div.items-box-num > div.items-box-price").text
         price = price.replace("¥", "").replace(" ", "").replace(",", "")
 
-        print(cat1)
-        print(cat2)
-        print(cat3)
-        print(brand)
-        print(state)
-        print(price)
-        print(url)
+        print("price" + price)
 
-        se = pandas.Series([title, cat1, cat2, cat3, brand,
-                            state, price, url], columns)
+        # 商品画像URLの取得
+        imageUrl = item.find_element_by_css_selector(
+            "a > figure.items-box-photo > img").get_attribute("data-src")
+
+        # 詳細ページURLの取得
+        itemUrl = item.find_element_by_css_selector("a").get_attribute("href")
+
+        # プラットフォーム名の設定
+        platform = "mercari"
+
+        se = pandas.Series(
+            [title, price, imageUrl, itemUrl, platform], columns)
         df = df.append(se, ignore_index=True)
 
-        print("Item {} added!".format(item_num))
-except:
-    print("Error occurred! Process cancelled but the added items will be exported to .csv")
+        # 例外処理の挙動を確認するために、故意に例外を発生させる。
+        # raise Exception
 
-df.to_csv("{}.csv".format(query), index=False, encoding="utf_8_sig")
+except Exception as e:
+    with open(r"./app/log/error.log", 'a') as f:
+        traceback.print_exc(file=f)
+
+    print("Error occurred! Process was cancelled but the added items will be exported to database.")
+
+# df.to_csv("{}.csv".format(query), index=False, encoding="utf_8_sig")
+df.to_sql('items', engine, index=False, if_exists='append')
 browser.quit()
-print("Done!")
+print("mercari done!")

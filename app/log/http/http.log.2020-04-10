@@ -1,0 +1,20 @@
+[2020-04-10T14:50:15.502] [INFO] http - { keyword: '上村ひなの',
+  platform: [ 'mercari', 'rakuten' ],
+  itemLimit: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-10T15:01:00.353] [INFO] http - { keyword: '渡邉美穂',
+  platform: [ 'mercari', 'rakuten' ],
+  itemLimit: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-10T15:52:52.787] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-10T16:06:04.514] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }

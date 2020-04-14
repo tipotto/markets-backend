@@ -15,33 +15,33 @@ module.exports = (sequelize, Sequelize) => {
       // },
       title: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
       },
       price: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: false,
       },
       imageUrl: {
         type: Sequelize.TEXT,
-        allowNull: false
+        allowNull: false,
       },
-      itemUrl: {
+      detailUrl: {
         type: Sequelize.TEXT,
-        allowNull: false
+        allowNull: false,
       },
       platform: {
         type: Sequelize.STRING,
-        allowNull: false
-      }
+        allowNull: false,
+      },
     },
     {
       freezeTableName: false,
       timestamps: false,
       indexes: [
         {
-          fields: ["price"]
-        }
-      ]
+          fields: ["price"],
+        },
+      ],
     }
   );
 
