@@ -1,0 +1,1 @@
+[2020-04-16T17:24:33.288] [INFO] access - ::ffff:10.0.2.2 - - "POST /api/search HTTP/1.1" 200 640 "" "PostmanRuntime/7.24.0"

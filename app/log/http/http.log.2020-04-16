@@ -1,0 +1,10 @@
+[2020-04-16T17:05:12.913] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-16T17:23:53.521] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }

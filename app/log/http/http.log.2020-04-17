@@ -1,0 +1,35 @@
+[2020-04-17T11:01:16.259] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-17T11:30:51.259] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-17T15:32:32.232] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-17T15:42:23.490] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'rakuten' ],
+  resultNum: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-17T16:40:53.209] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'rakuten' ],
+  resultNum: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-17T16:58:00.441] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-17T19:25:27.608] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }

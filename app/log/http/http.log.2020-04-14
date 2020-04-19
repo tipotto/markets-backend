@@ -1,0 +1,80 @@
+[2020-04-14T09:59:19.100] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T10:41:44.065] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T10:55:19.842] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T11:10:55.848] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T11:21:49.979] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T11:32:14.000] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '2',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T11:44:11.458] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari' ],
+  resultNum: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T11:50:25.534] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari' ],
+  resultNum: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T12:03:57.203] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari' ],
+  resultNum: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T15:11:05.378] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'mercari' ],
+  resultNum: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T15:23:24.650] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'mercari' ],
+  resultNum: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T15:26:28.182] [INFO] http - { keyword: '渡辺美穂',
+  platform: [ 'mercari' ],
+  resultNum: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T15:29:23.246] [INFO] http - { keyword: '渡辺美穂',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '1',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T15:31:48.827] [INFO] http - { keyword: '渡辺美穂',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '10',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T15:41:19.582] [INFO] http - { keyword: '日向坂46',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '10',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }
+[2020-04-14T16:11:32.080] [INFO] http - { keyword: '久間田琳加',
+  platform: [ 'mercari', 'rakuten' ],
+  resultNum: '10',
+  sortIndex: 'price',
+  sortOrder: 'ASC' }

@@ -1,5 +1,0 @@
-[2020-04-02T18:51:07.768] [INFO] http - { keyword: 'どうぶつの森',
-  platform: [ 'mercari', 'rakuten' ],
-  itemLimit: 6,
-  sortIndex: 'price',
-  sortOrder: 'ASC' }

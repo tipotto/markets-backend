@@ -1,5 +1,5 @@
 MERCARI = {
-    'socks': 'socks5://127.0.0.1:9000',
+    'proxy': 'socks5://127.0.0.1:9000',
     'platform': 'mercari',
     'url': 'https://www.mercari.com/jp/search/?keyword={}&status_on_sale=1',
     'items': {'selector': '.items-box'},
@@ -16,7 +16,7 @@ MERCARI = {
 }
 
 RAKUTEN = {
-    'socks': 'socks5://127.0.0.1:9001',
+    'proxy': 'socks5://127.0.0.1:9001',
     'url': 'https://fril.jp/search/{}',
     'platform': 'rakuten',
     'items': {'selector': '.item'},

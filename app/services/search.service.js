@@ -23,31 +23,48 @@ module.exports = class SearchService {
 
   /**
    * 配列の登録
-   * @param {*} searchResultArray
+   * @param {*} resultArray
    */
-  bulkCreate(searchResultArray) {
-    return new Promise((resolve, reject) => {
-      Search.bulkCreate(searchResultArray)
-        .then((items) => {
-          resolve(items);
-        })
-        .catch((err) => {
-          reject(err);
-        });
+  bulkCreate(resultArray) {
+    const promiseArray = [];
+
+    resultArray.forEach((result) => {
+      const promise = new Promise((resolve, reject) => {
+        Search.bulkCreate(result)
+          .then((items) => {
+            resolve(items);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      });
+      promiseArray.push(promise);
     });
+
+    return promiseArray;
   }
+
+  // bulkCreate(searchResultArray) {
+  //   return new Promise((resolve, reject) => {
+  //     Search.bulkCreate(searchResultArray)
+  //       .then((items) => {
+  //         resolve(items);
+  //       })
+  //       .catch((err) => {
+  //         reject(err);
+  //       });
+  //   });
+  // }
 
   /**
    * アイテムリストの取得
-   * @param {*} resultNum
-   * @param {*} sortIndex
-   * @param {*} sortOrder
+   * @param {*} form
    */
-  findAll(resultNum, sortIndex, sortOrder) {
+  findAll(form) {
     return new Promise((resolve, reject) => {
       Search.findAll({
-        limit: resultNum,
-        order: [[sortIndex, sortOrder]],
+        limit: form.resultNum,
+        order: [[form.sortIndex, form.sortOrder]],
         // where: {}
       })
         .then((items) => {
@@ -68,7 +85,7 @@ module.exports = class SearchService {
         where: {},
         truncate: false,
       })
-        .then(() => {
+        .then((items) => {
           resolve();
         })
         .catch((err) => {
@@ -83,7 +100,7 @@ module.exports = class SearchService {
    */
   search(form) {
     return new Promise((resolve, reject) => {
-      console.log("python-shellの呼び出し(node: searchService)");
+      console.log("1. python-shellの呼び出し。");
       var pyshell = new PythonShell(pyPath, {
         mode: "text",
       });
@@ -93,40 +110,85 @@ module.exports = class SearchService {
         keyword: form.keyword,
       };
 
-      console.log("jsonをpython側に送信(node: searchService)");
+      console.log("2. フォームデータをpython側に送信。");
       pyshell.send(JSON.stringify(json));
 
-      var promiseArray = [];
       pyshell.on("message", (data) => {
-        console.log("mercari： " + data);
-        this.bulkCreate(JSON.parse(data || "null"))
-          .then((items) => {
-            promiseArray.push(items);
-            console.log(
-              "検索結果を登録し、promiseオブジェクトをプッシュしました。(node: searchService onメソッド)"
-            );
-          })
-          .catch((err) => {
-            console.log(err.message);
-          });
-      });
+        console.log("3. スクレイピング結果の取得。");
+        console.log("検索結果： " + data);
 
-      pyshell.end((err) => {
-        Promise.all(promiseArray).then((data) => {
-          this.findAll(form.resultNum, form.sortIndex, form.sortOrder)
+        const resultArray = JSON.parse(data || "null");
+        Promise.all(this.bulkCreate(resultArray)).then((items) => {
+          console.log("4. 検索結果を登録完了。");
+          this.findAll(form)
             .then((items) => {
+              console.log("5. 検索結果を取得完了。");
               this.res.status(Key.FETCH.SUCCESS.httpResCode).send(items);
               this.deleteAll();
             })
             .then((items) => {
-              console.log("end");
-              resolve("mercari finished.");
+              console.log("6. 検索結果を削除完了。");
             })
             .catch((err) => {
               reject(err);
             });
         });
       });
+
+      pyshell.end((err) => {
+        if (err) reject(err);
+        console.log("7. 一通り処理を終了。");
+        resolve("スクレイピング完了。");
+      });
     });
   }
+
+  // search(form) {
+  //   return new Promise((resolve, reject) => {
+  //     console.log("python-shellの呼び出し(node: searchService)");
+  //     var pyshell = new PythonShell(pyPath, {
+  //       mode: "text",
+  //     });
+
+  //     var json = {
+  //       pfArray: form.pfArray,
+  //       keyword: form.keyword,
+  //     };
+
+  //     console.log("jsonをpython側に送信(node: searchService)");
+  //     pyshell.send(JSON.stringify(json));
+
+  //     var promiseArray = [];
+  //     pyshell.on("message", (data) => {
+  //       console.log("mercari： " + data);
+  //       this.bulkCreate(JSON.parse(data || "null"))
+  //         .then((items) => {
+  //           promiseArray.push(items);
+  //           console.log(
+  //             "検索結果を登録し、promiseオブジェクトをプッシュしました。(node: searchService onメソッド)"
+  //           );
+  //         })
+  //         .catch((err) => {
+  //           console.log(err.message);
+  //         });
+  //     });
+
+  //     pyshell.end((err) => {
+  //       Promise.all(promiseArray).then((data) => {
+  //         this.findAll(form.resultNum, form.sortIndex, form.sortOrder)
+  //           .then((items) => {
+  //             this.res.status(Key.FETCH.SUCCESS.httpResCode).send(items);
+  //             this.deleteAll();
+  //           })
+  //           .then((items) => {
+  //             console.log("end");
+  //             resolve("mercari finished.");
+  //           })
+  //           .catch((err) => {
+  //             reject(err);
+  //           });
+  //       });
+  //     });
+  //   });
+  // }
 };

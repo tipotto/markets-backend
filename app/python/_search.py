@@ -9,10 +9,12 @@ from constants import search
 
 
 class SearchService:
-    __keyword = None
+    options = None
+    browser = None
+    keyword = None
 
     def __init__(self, param):
-        self.proxy = param['proxy']
+        self.socks = param['socks']
         self.platform = param['platform']
         self.url = param['url']
         self.itemsSelector = param['items']['selector']
@@ -35,23 +37,28 @@ class SearchService:
         return SearchService(param)
 
     @classmethod
-    def setKeyword(cls, keyword):
-        cls.__keyword = keyword
+    def quitScraping(cls):
+        cls.browser.quit()
 
-    def __quitBrowser(self):
-        self.browser.quit()
+    @classmethod
+    def setScraping(cls, keyword):
 
-    def __setBrowser(self):
+        socks = 'socks5://127.0.0.1:9000'
+
         options = Options()
         options.binary_location = '/usr/bin/google-chrome'
         options.add_argument('--headless')
-        options.add_argument(f'--proxy-server={self.proxy}')
+        # options.add_argument('--window-size=1280,1024')
+        options.add_argument(f'--proxy-server={socks}')
 
         browser = webdriver.Chrome('chromedriver', options=options)
         browser.implicitly_wait = 10
-        self.browser = browser
 
-    def __extract(self, item):
+        cls.keyword = keyword
+        cls.options = options
+        cls.browser = browser
+
+    def extract(self, item):
 
         # 商品名の取得
         title = item.find_element_by_css_selector(
@@ -85,19 +92,21 @@ class SearchService:
         return data
 
     def search(self):
+        url_site = self.url.format(SearchService.keyword)
 
-        # Chromeの設定、起動
-        self.__setBrowser()
+        # options = SearchService.options
+        # options.add_argument(f'--proxy-server={self.socks}')
 
-        # インスタンスメソッド内でクラス変数のkeywordにアクセス
-        # self.keywordとしても可能
-        site_url = self.url.format(SearchService.__keyword)
+        # インスタンスメソッド内でクラス変数にアクセス（selfからでも可能）
+        browser = SearchService.browser
+        # browser = webdriver.Chrome('chromedriver', options=options)
+        # browser.implicitly_wait = 10
 
-        self.browser.get(site_url)
+        browser.get(url_site)
 
         # 全てのアイテムを取得
         # time.sleep(1)
-        items = self.browser.find_elements_by_css_selector(self.itemsSelector)
+        items = browser.find_elements_by_css_selector(self.itemsSelector)
 
         item_num = 0
         item_limit = 0
@@ -108,7 +117,7 @@ class SearchService:
                     break
 
                 # 各アイテムから必要なデータを抽出
-                resultObj = self.__extract(item)
+                resultObj = self.extract(item)
                 resultArray.append(resultObj)
 
                 item_num += 1
@@ -123,6 +132,4 @@ class SearchService:
             print(
                 "Error occurred! Process was cancelled but the added items will be exported to database.")
 
-        # Chromeの終了
-        self.__quitBrowser()
         return resultArray
