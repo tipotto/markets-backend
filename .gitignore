@@ -1,1 +1,5 @@
+# node_modulesを管理対象外にする。
 node_modules
+
+# logファイルを管理対象外にする。
+app/log

@@ -100,7 +100,7 @@ class SearchService:
         items = self.browser.find_elements_by_css_selector(self.itemsSelector)
 
         item_num = 0
-        item_limit = 0
+        item_limit = 3
         resultArray = []
         try:
             for item in items:
