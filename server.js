@@ -5,9 +5,11 @@ const cors = require("cors");
 const app = express();
 const db = require("./app/models/");
 const logger = require("./app/config/log4js.config.js");
+const cron = require("node-cron");
+const SearchService = require("./app/services/search.service");
 
 var corsOptions = {
-  origin: "http://localhost:8000"
+  origin: "http://localhost:8000",
 };
 
 app.use(cors(corsOptions));
@@ -23,20 +25,16 @@ db.sequelize.sync({ force: true }).then(() => {
   console.log("Drop and re-sync db.");
 });
 
-// const client =
-//   process.env.NODE_ENV === "production"
-//     ? mysql.createConnection({
-//         user: process.env.REACT_APP_DB_USER,
-//         password: process.env.REACT_APP_DB_PASSWORD,
-//         database: process.env.REACT_APP_DB_DATABASE,
-//         socketPath: `/cloudsql/${process.env.REACT_APP_INSTANCE_CONNECTION_NAME}`
-//       })
-//     : mysql.createConnection({
-//         user: process.env.REACT_APP_DB_USER,
-//         password: process.env.REACT_APP_DB_PASSWORD,
-//         database: process.env.REACT_APP_DB_DATABASE,
-//         host: "localhost"
-//       });
+// 毎日0時にキャッシュを削除
+cron.schedule("0 0 0 * * *", () => {
+  SearchService.deleteAll()
+    .then((value) => {
+      console.log("削除処理が完了しました。");
+    })
+    .catch((err) => {
+      console.log("エラーが発生しました: " + err.message);
+    });
+});
 
 // ログ設定
 // log4js.configure("./app/config/log4js.config.json");
@@ -44,7 +42,7 @@ db.sequelize.sync({ force: true }).then(() => {
 // const httpLogger = log4js.getLogger("http");
 // const accessLogger = log4js.getLogger("access");
 // app.use(log4js.connectLogger(accessLogger));
-app.use(log4js.connectLogger(logger.access));
+// app.use(log4js.connectLogger(logger.access));
 app.use((req, res, next) => {
   if (
     typeof req === "undefined" ||

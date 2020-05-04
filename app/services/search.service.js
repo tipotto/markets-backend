@@ -1,7 +1,8 @@
+const crypto = require("crypto");
 const db = require("../models/index");
 const Search = db.search;
-const Key = require("../constants/user");
-const pyPath = require("../constants/search");
+const Op = db.Sequelize.Op;
+const Key = require("../constants/search");
 var { PythonShell } = require("python-shell");
 
 module.exports = class SearchService {
@@ -22,91 +23,85 @@ module.exports = class SearchService {
   }
 
   /**
+   * アイテムリストを全て削除（クーロン処理）
+   */
+  static deleteAll() {
+    return new Promise((resolve, reject) => {
+      Search.destroy({
+        where: {},
+        truncate: false,
+      })
+        .then(resolve)
+        .catch(reject);
+    });
+  }
+
+  /**
    * 配列の登録
    * @param {*} resultArray
    */
-  bulkCreate(resultArray) {
-    const promiseArray = [];
+  bulkCreate(resultArr) {
+    console.log("3. 検索結果をDBに登録。");
 
-    resultArray.forEach((result) => {
-      const promise = new Promise((resolve, reject) => {
-        Search.bulkCreate(result)
-          .then((items) => {
-            resolve(items);
-          })
-          .catch((err) => {
-            reject(err);
-          });
+    var promise = resultArr.map((arr) => {
+      return new Promise((resolve, reject) => {
+        Search.bulkCreate(arr).then(resolve).catch(reject);
       });
-      promiseArray.push(promise);
     });
-
-    return promiseArray;
+    return Promise.all(promise);
   }
 
-  // bulkCreate(searchResultArray) {
-  //   return new Promise((resolve, reject) => {
-  //     Search.bulkCreate(searchResultArray)
-  //       .then((items) => {
-  //         resolve(items);
-  //       })
-  //       .catch((err) => {
-  //         reject(err);
-  //       });
-  //   });
-  // }
+  findOne(hash) {
+    console.log("4. findOneメソッド実行。");
+    return new Promise((resolve, reject) => {
+      Search.findOne({
+        where: {
+          hash: hash,
+        },
+      })
+        .then(resolve)
+        .catch(reject);
+    });
+  }
 
   /**
    * アイテムリストの取得
    * @param {*} form
    */
   findAll(form) {
+    console.log("4. スクレイピング結果の取得。");
     return new Promise((resolve, reject) => {
       Search.findAll({
+        where: {
+          hash: {
+            [Op.or]: form.hashArr,
+          },
+        },
         limit: form.resultNum,
         order: [[form.sortIndex, form.sortOrder]],
-        // where: {}
       })
-        .then((items) => {
-          resolve(items);
-        })
-        .catch((err) => {
-          reject(err);
-        });
+        .then(resolve)
+        .catch(reject);
     });
   }
 
-  /**
-   * アイテムリストを全削除
-   */
-  deleteAll() {
-    return new Promise((resolve, reject) => {
-      Search.destroy({
-        where: {},
-        truncate: false,
-      })
-        .then((items) => {
-          resolve();
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
+  response(value) {
+    this.res.status(200).send(value);
   }
 
   /**
-   * 検索
+   * スクレイピング
    * @param {*} form
    */
-  search(form) {
+  scrape(form) {
     return new Promise((resolve, reject) => {
       console.log("1. python-shellの呼び出し。");
-      var pyshell = new PythonShell(pyPath, {
+      var pyshell = new PythonShell(Key.PYTHON_PATH, {
         mode: "text",
       });
 
       var json = {
-        pfArray: form.pfArray,
+        paramArr: form.paramArr,
         keyword: form.keyword,
       };
 
@@ -114,25 +109,13 @@ module.exports = class SearchService {
       pyshell.send(JSON.stringify(json));
 
       pyshell.on("message", (data) => {
-        console.log("3. スクレイピング結果の取得。");
         console.log("検索結果： " + data);
 
-        const resultArray = JSON.parse(data || "null");
-        Promise.all(this.bulkCreate(resultArray)).then((items) => {
-          console.log("4. 検索結果を登録完了。");
-          this.findAll(form)
-            .then((items) => {
-              console.log("5. 検索結果を取得完了。");
-              this.res.status(Key.FETCH.SUCCESS.httpResCode).send(items);
-              this.deleteAll();
-            })
-            .then((items) => {
-              console.log("6. 検索結果を削除完了。");
-            })
-            .catch((err) => {
-              reject(err);
-            });
-        });
+        const resultArr = JSON.parse(data || "null");
+        this.bulkCreate(resultArr)
+          .then(this.findAll.bind(null, form))
+          .then(this.response.bind(this))
+          .catch(reject);
       });
 
       pyshell.end((err) => {
@@ -143,52 +126,74 @@ module.exports = class SearchService {
     });
   }
 
-  // search(form) {
-  //   return new Promise((resolve, reject) => {
-  //     console.log("python-shellの呼び出し(node: searchService)");
-  //     var pyshell = new PythonShell(pyPath, {
-  //       mode: "text",
-  //     });
+  generateHash(keyword, platform) {
+    console.log("3. ハッシュを生成。");
+    const sha1sum = crypto.createHash("sha1");
+    sha1sum.update(keyword + platform + Key.HASH_SECRET);
+    return sha1sum.digest("hex");
+  }
 
-  //     var json = {
-  //       pfArray: form.pfArray,
-  //       keyword: form.keyword,
-  //     };
+  moldKeyword(keyword) {
+    console.log("1. 検索キーワードを成形。");
+    return keyword.split(/\s+/).join("_");
+  }
 
-  //     console.log("jsonをpython側に送信(node: searchService)");
-  //     pyshell.send(JSON.stringify(json));
+  addFormProps(form, value) {
+    console.log("6. addFormPropsメソッド実行。");
 
-  //     var promiseArray = [];
-  //     pyshell.on("message", (data) => {
-  //       console.log("mercari： " + data);
-  //       this.bulkCreate(JSON.parse(data || "null"))
-  //         .then((items) => {
-  //           promiseArray.push(items);
-  //           console.log(
-  //             "検索結果を登録し、promiseオブジェクトをプッシュしました。(node: searchService onメソッド)"
-  //           );
-  //         })
-  //         .catch((err) => {
-  //           console.log(err.message);
-  //         });
-  //     });
+    return new Promise((resolve, reject) => {
+      var hashArr = [];
+      var scrapeParamArr = [];
+      value.forEach((obj) => {
+        hashArr.push(obj.hash);
+        if (obj.platform) {
+          scrapeParamArr.push({
+            hash: obj.hash,
+            platform: obj.platform,
+          });
+        }
+      });
+      form.hashArr = hashArr;
+      form.paramArr = scrapeParamArr;
+      resolve(form);
+    });
+  }
 
-  //     pyshell.end((err) => {
-  //       Promise.all(promiseArray).then((data) => {
-  //         this.findAll(form.resultNum, form.sortIndex, form.sortOrder)
-  //           .then((items) => {
-  //             this.res.status(Key.FETCH.SUCCESS.httpResCode).send(items);
-  //             this.deleteAll();
-  //           })
-  //           .then((items) => {
-  //             console.log("end");
-  //             resolve("mercari finished.");
-  //           })
-  //           .catch((err) => {
-  //             reject(err);
-  //           });
-  //       });
-  //     });
-  //   });
-  // }
+  createObj(hash, platform, value) {
+    console.log("5. createArrメソッド実行。");
+
+    return new Promise((resolve, reject) => {
+      var obj = {};
+      obj.hash = hash;
+      if (!value) obj.platform = platform;
+      resolve(obj);
+    });
+  }
+
+  checkCache(form, keyword) {
+    console.log("2. checkCacheメソッド実行。");
+
+    const arr = form.pfArray;
+    var promise = arr.map((platform) => {
+      return new Promise((resolve, reject) => {
+        const hash = this.generateHash(keyword, platform);
+        this.findOne(hash)
+          .then(this.createObj.bind(null, hash, platform))
+          .then(resolve)
+          .catch(reject);
+      });
+    });
+    return Promise.all(promise);
+  }
+
+  search(form) {
+    return new Promise((resolve, reject) => {
+      const moldedKeyword = this.moldKeyword(form.keyword);
+      this.checkCache(form, moldedKeyword)
+        .then(this.addFormProps.bind(null, form))
+        .then(this.scrape.bind(this))
+        .then(resolve)
+        .catch(reject);
+    });
+  }
 };

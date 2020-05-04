@@ -1,6 +1,0 @@
-Traceback (most recent call last):
-  File "/home/vagrant/workspace/react/my-app-server/app/python/search.py", line 118, in search
-    resultObj = self.extract(item)
-  File "/home/vagrant/workspace/react/my-app-server/app/python/search.py", line 72, in extract
-    " ", "").replace(",", ""))
-ValueError: invalid literal for int() with base 10: ''

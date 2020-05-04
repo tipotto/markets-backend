@@ -15,9 +15,10 @@ exports.search = (req, res) => {
   SearchService.init(res)
     .search(form)
     .then((items) => {
+      console.log("controller: " + items);
       console.log("正常に処理が完了しました。");
     })
     .catch((err) => {
-      console.log("エラーが発生しました。");
+      console.log("エラーが発生しました: " + err.message);
     });
 };

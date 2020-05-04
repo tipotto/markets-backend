@@ -1,5 +1,9 @@
-# node_modulesを管理対象外にする。
+# node_modules
 node_modules
 
-# logファイルを管理対象外にする。
+# Logs
 app/log
+
+# __pycache__
+app/python/__pycache__
+app/python/constants/__pycache__

@@ -33,6 +33,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      hash: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
     },
     {
       freezeTableName: false,
@@ -40,6 +44,9 @@ module.exports = (sequelize, Sequelize) => {
       indexes: [
         {
           fields: ["price"],
+        },
+        {
+          fields: ["hash"],
         },
       ],
     }

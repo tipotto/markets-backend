@@ -47,7 +47,7 @@ module.exports = class SearchService {
     // 抽象的なメッセージでは、エラーの箇所や原因を特定しづらいため、
     // エラーオブジェクトを受け取る方が良さそう。
     this.res.status(resData.httpResCode).send({
-      message: resData.message
+      message: resData.message,
       // message: err ? err.message : resData.message
     });
     db.sequelize.close();
@@ -103,7 +103,7 @@ module.exports = class SearchService {
 
       // pythonでprintメソッドによって出力されたテキストは、dataに格納される。
       // 例外発生時のexcept内のテキストを含む。
-      pyshell.on("message", data => {
+      pyshell.on("message", (data) => {
         console.log("mercari：" + data);
       });
 
@@ -112,7 +112,7 @@ module.exports = class SearchService {
       // この部分では受け取れないため、スルーされる。
       // スクレイピング処理、dataframeへのデータの格納時にエラーが発生した場合、
       // expect句で処理されるように実装済み。
-      pyshell.end(err => {
+      pyshell.end((err) => {
         // if (err) reject("異常系：" + err);
         console.log("end");
         resolve("mercari finished.");
@@ -129,11 +129,11 @@ module.exports = class SearchService {
       var pyshell = new PythonShell(key.pyPath.RAKUTEN);
       pyshell.send(keyword);
 
-      pyshell.on("message", data => {
+      pyshell.on("message", (data) => {
         console.log("Rakuten：" + data);
       });
 
-      pyshell.end(err => {
+      pyshell.end((err) => {
         console.log("end");
         resolve("Rakuten finished.");
       });
@@ -153,14 +153,14 @@ module.exports = class SearchService {
     return new Promise((resolve, reject) => {
       Search.findAll({
         limit: resultNum,
-        order: [[sortIndex, sortOrder]]
+        order: [[sortIndex, sortOrder]],
         // where: {}
       })
-        .then(items => {
+        .then((items) => {
           // this.res.status(res.FETCH.SUCCESS.httpResCode).send(items);
           resolve(items);
         })
-        .catch(err => {
+        .catch((err) => {
           // this.res.status(res.FETCH.FAIL.httpResCode).send({
           //   message: err.message
           // });
@@ -180,12 +180,12 @@ module.exports = class SearchService {
     return new Promise((resolve, reject) => {
       Search.destroy({
         where: {},
-        truncate: false
+        truncate: false,
       })
         .then(() => {
           resolve();
         })
-        .catch(err => {
+        .catch((err) => {
           reject(err);
         });
     });

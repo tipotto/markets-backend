@@ -1,5 +1,0 @@
-[2020-04-22T10:26:42.285] [INFO] http - { keyword: '日向坂46',
-  platform: [ 'mercari', 'rakuten' ],
-  resultNum: 30,
-  sortIndex: 'price',
-  sortOrder: 'ASC' }
