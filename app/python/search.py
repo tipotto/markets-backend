@@ -12,7 +12,8 @@ class SearchService:
         self.referer = param['header']['referer']
         self.proxy = param['proxy']
         self.platform = param['platform']
-        self.url = param['url']
+        self.siteUrl = param['siteUrl']
+        self.searchUrl = param['searchUrl']
         self.itemsSelector = param['items']['selector']
         self.titleSelector = param['title']['selector']
         self.titleAttr = param['title']['attr']
@@ -48,12 +49,17 @@ class SearchService:
         return title
 
     def __getDetailUrl(self, item):
-        if self.platform == const.PAYPAY:
-            relativePath = item.get(self.detailAttr)
-            detailUrl = const.BASE_URL[const.PAYPAY] + relativePath
-        else:
+        if self.platform == const.MERCARI:
+            details = item.select(self.detailSelector)
+            detailUrl = self.siteUrl + details[0].get(self.detailAttr)
+
+        elif self.platform == const.RAKUTEN:
             details = item.select(self.detailSelector)
             detailUrl = details[0].get(self.detailAttr)
+
+        else:
+            relativePath = item.get(self.detailAttr)
+            detailUrl = self.siteUrl + relativePath
         return detailUrl
 
     def __extract(self, item):
@@ -89,7 +95,7 @@ class SearchService:
 
         # インスタンスメソッド内でクラス変数のkeywordにアクセス
         # self.keywordとしても可能
-        site_url = self.url.format(SearchService.__keyword)
+        site_url = self.searchUrl.format(SearchService.__keyword)
 
         # 全てのアイテムを取得
         proxies = {
@@ -97,22 +103,22 @@ class SearchService:
             'https': self.proxy
         }
 
-        # headers = {
-        #     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        #     'Accept-Encoding': 'gzip, deflate, br',
-        #     'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8',
-        #     'Referer': self.referer,
-        #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
-        # }
+        # Multitorをプロキシとして使う場合
+        headers = {
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Accept-Language': 'ja,en-US;q=0.9,en;q=0.8',
+            'Referer': self.referer,
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'
+        }
+
+        html = requests.get(site_url, headers=headers, proxies=proxies)
 
         # Luminatiをプロキシとして使う場合
-        html = requests.get(
-            site_url, verify='/etc/ssl/certs/ca.pem', proxies=proxies)
+        # html = requests.get(
+        #     site_url, verify='/etc/ssl/certs/ca.pem', proxies=proxies)
 
-        # Multitorをプロキシとして使う場合
-        # html = requests.get(site_url, headers=headers, proxies=proxies)
         soup = BeautifulSoup(html.content, "html.parser")
-
         items = soup.select(self.itemsSelector)
 
         item_num = 0

@@ -2,7 +2,7 @@ MERCARI = 'mercari'
 RAKUTEN = 'rakuten'
 PAYPAY = 'paypay'
 
-BASE_URL = {
+SITE_URL = {
     MERCARI: 'https://www.mercari.com',
     RAKUTEN: 'https://fril.jp',
     PAYPAY: 'https://paypayfleamarket.yahoo.co.jp'
@@ -25,21 +25,22 @@ PROXY = {
 
 HTTP_HEADER = {
     MERCARI: {
-        'referer': BASE_URL[MERCARI],
+        'referer': SITE_URL[MERCARI] + '/jp/',
     },
     RAKUTEN: {
-        'referer': BASE_URL[RAKUTEN],
+        'referer': SITE_URL[RAKUTEN] + '/',
     },
     PAYPAY: {
-        'referer': BASE_URL[PAYPAY],
+        'referer': SITE_URL[PAYPAY] + '/search/%E6%97%A5%E5%90%91%E5%9D%8246%20%E6%B8%A1%E9%82%89%E7%BE%8E%E7%A9%82?page=1',
     },
 }
 
 MERCARI_PARAM = {
     'header': HTTP_HEADER[MERCARI],
-    'proxy': PROXY[MERCARI]['luminati'],
+    'proxy': PROXY[MERCARI]['tor'],
     'platform': MERCARI,
-    'url': BASE_URL[MERCARI] + '/jp/search/?keyword={}&status_on_sale=1',
+    'siteUrl': SITE_URL[MERCARI],
+    'searchUrl': SITE_URL[MERCARI] + '/jp/search/?keyword={}&status_on_sale=1',
     'items': {'selector': '.items-box'},
     'title': {
         'selector': 'a > div.items-box-body > h3',
@@ -58,8 +59,9 @@ MERCARI_PARAM = {
 
 RAKUTEN_PARAM = {
     'header': HTTP_HEADER[RAKUTEN],
-    'proxy': PROXY[RAKUTEN]['luminati'],
-    'url': BASE_URL[RAKUTEN] + '/search/{}',
+    'proxy': PROXY[RAKUTEN]['tor'],
+    'siteUrl': SITE_URL[RAKUTEN],
+    'searchUrl': SITE_URL[RAKUTEN] + '/search/{}',
     'platform': RAKUTEN,
     'items': {'selector': '.item'},
     'title': {
@@ -79,8 +81,9 @@ RAKUTEN_PARAM = {
 
 PAYPAY_PARAM = {
     'header': HTTP_HEADER[PAYPAY],
-    'proxy': PROXY[PAYPAY]['luminati'],
-    'url': BASE_URL[PAYPAY] + '/search/{}?open=1',
+    'proxy': PROXY[PAYPAY]['tor'],
+    'siteUrl': SITE_URL[PAYPAY],
+    'searchUrl': SITE_URL[PAYPAY] + '/search/{}?open=1',
     'platform': PAYPAY,
     'items': {'selector': '.ItemThumbnail__Component-tlgyjt-0'},
     'title': {

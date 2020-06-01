@@ -1,9 +1,12 @@
 # node_modules
 node_modules
 
-# Logs
+# logs
 app/log
 
 # __pycache__
 app/python/__pycache__
 app/python/constants/__pycache__
+
+# backup files
+app/**/_*.*
