@@ -1,6 +1,14 @@
 {
-  "ignore": [".git", "node_modules/**/node_modules", "app/log/"],
+  "ignore": [
+    ".git",
+    "node_modules/**/node_modules",
+    "app/log/"
+  ],
   "verbose": true,
-  "watch": ["server.js", "package.json", "app"],
+  "watch": [
+    "server.js",
+    "package.json",
+    "app"
+  ],
   "ext": "js,json,py"
 }

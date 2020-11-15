@@ -1,0 +1,26 @@
+{
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "extends": [
+        "eslint:recommended", 
+        "plugin:node/recommended",
+        "plugin:prettier/recommended"
+    ],
+    "plugins": [
+        "json-format"
+    ],
+    "settings": {
+        "json/sort-package-json": "standard",
+        "json/json-with-comments-files": [".vscode/**"]
+    },
+    "rules": {
+        "prettier/prettier": ["error", { "singleQuote": true, "trailingComma": "es5" }],
+        "node/exports-style": ["error", "module.exports"],
+        "node/no-deprecated-api": "error",
+        "node/no-missing-require": "error",
+        "node/no-unsupported-features": "error",
+        "no-unused-vars": "off"
+    }
+  }

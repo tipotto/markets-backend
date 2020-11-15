@@ -1,15 +1,16 @@
-const express = require("express");
-const log4js = require("log4js");
-const mysql = require("mysql");
-const cors = require("cors");
+const express = require('express');
+const log4js = require('log4js');
+const mysql = require('mysql');
+const cors = require('cors');
 const app = express();
-const db = require("./app/models/");
-const logger = require("./app/config/log4js.config.js");
-const cron = require("node-cron");
-const SearchService = require("./app/services/search.service");
+const db = require('./app/models/');
+const logger = require('./app/config/log4js.config.js');
+const cron = require('node-cron');
+const SearchService = require('./app/services/search.service');
+const SearchRoute = require('./app/routes/search.routes');
 
 var corsOptions = {
-  origin: "http://localhost:8000",
+  origin: 'http://localhost:8000',
 };
 
 app.use(cors(corsOptions));
@@ -22,17 +23,17 @@ app.use(express.urlencoded({ extended: true }));
 
 // db.sequelize.sync();
 db.sequelize.sync({ force: true }).then(() => {
-  console.log("Drop and re-sync db.");
+  console.log('Drop and re-sync db.');
 });
 
 // 毎日0時にキャッシュを削除
-cron.schedule("0 0 0 * * *", () => {
+cron.schedule('0 0 0 * * *', () => {
   SearchService.deleteAll()
     .then((value) => {
-      console.log("削除処理が完了しました。");
+      console.log('削除処理が完了しました。');
     })
     .catch((err) => {
-      console.log("エラーが発生しました: " + err.message);
+      console.log('エラーが発生しました: ' + err.message);
     });
 });
 
@@ -45,11 +46,11 @@ cron.schedule("0 0 0 * * *", () => {
 // app.use(log4js.connectLogger(logger.access));
 app.use((req, res, next) => {
   if (
-    typeof req === "undefined" ||
+    typeof req === 'undefined' ||
     req === null ||
-    typeof req.method === "undefined" ||
+    typeof req.method === 'undefined' ||
     req.method === null ||
-    typeof req.header === "undefined" ||
+    typeof req.header === 'undefined' ||
     req.header === null
   ) {
     next();
@@ -61,7 +62,7 @@ app.use((req, res, next) => {
   // } else {
   //   httpLogger.info(req.body);
   // }
-  if (req.method === "POST") {
+  if (req.method === 'POST') {
     logger.http.info(req.body);
   }
   next();
@@ -72,7 +73,7 @@ app.listen(PORT, () =>
   logger.system.info(`App has been started. Server is running on port ${PORT}.`)
 );
 
-require("./app/routes/search.routes")(app);
+SearchRoute(app);
 // require("./app/routes/user.routes")(app);
 // TODO item.serviceの内容確認、itemのconstantsの作成などが未完了。
 // require("./app/routes/item.routes")(app);

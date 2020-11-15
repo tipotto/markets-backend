@@ -1,7 +1,8 @@
-module.exports = (app) => {
-  const search = require("../controllers/search.controller.js");
+const SearchController = require('../controllers/search.controller.js');
+const express = require('express');
 
-  var router = require("express").Router();
-  router.post("/", search.search);
-  app.use("/api/search", router);
+module.exports = (app) => {
+  var router = express.Router();
+  router.post('/', SearchController);
+  app.use('/api/search', router);
 };

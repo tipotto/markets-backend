@@ -1,27 +1,42 @@
 {
   "name": "markets-server",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "git@github.com:tipotto/markets-server.git",
-  "author": "tipotto <label1134@gmail.com>",
   "license": "MIT",
+  "author": "tipotto <label1134@gmail.com>",
+  "main": "index.js",
   "scripts": {
-    "start": "yarn run nodemon -L server.js",
     "debug": "node --inspect=0.0.0.0:9229 server.js",
-    "server": "cd ~/multitor && sudo multitor --init 3 --user debian-tor --socks-port 9000 --control-port 9900 && cd ~/workspace/markets/server && node server.js",
+    "dev": "yarn run npm-run-all -p dev:*",
+    "dev:client": "yarn --cwd ~/workspace/markets/client start",
     "dev:server": "yarn run nodemon -L server.js",
-    "dev:client": "yarn --cwd ../client start",
-    "dev": "yarn run npm-run-all -p dev:*"
+    "proxy": "cd ~/multitor && sudo multitor --init 3 --user debian-tor --socks-port 9000 --control-port 9900",
+    "server": "cd ~/multitor && sudo multitor --init 3 --user debian-tor --socks-port 9000 --control-port 9900 && cd ~/workspace/markets/server && node server.js",
+    "start": "yarn run nodemon -L server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "express": "^4.17.1",
+    "log4js": "^6.3.0",
+    "mysql": "^2.18.1",
+    "node-cron": "^2.0.3",
+    "python-shell": "^2.0.2",
+    "sequelize": "^6.3.5"
   },
   "devDependencies": {
     "@luminati-io/luminati-proxy": "^1.179.25",
+    "eslint": "^7.13.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-json-format": "^2.0.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "mysql2": "^2.2.5",
     "nodemon": "^2.0.2",
-    "npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.2"
   },
-  "dependencies": {
-    "concurrently": "^5.1.0",
-    "crypto": "^1.0.1",
-    "forever": "^2.0.0",
-    "node-cron": "^2.0.3"
+  "engines": {
+    "node": ">=8.10.0"
   }
 }

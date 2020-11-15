@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
   const Search = sequelize.define(
-    "items",
+    'items',
     {
       // id, createdAt, updatedAt はデフォルトで設定される。
       // id: not null, primary key, auto_increment
@@ -43,10 +43,10 @@ module.exports = (sequelize, Sequelize) => {
       timestamps: false,
       indexes: [
         {
-          fields: ["price"],
+          fields: ['price'],
         },
         {
-          fields: ["hash"],
+          fields: ['hash'],
         },
       ],
     }

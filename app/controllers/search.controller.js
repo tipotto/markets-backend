@@ -1,9 +1,7 @@
-const SearchService = require("../services/search.service");
-const db = require("../models/index");
-const Key = require("../constants/user");
+const SearchService = require('../services/search.service');
 // const logger = require("../config/log4js.config.js");
 
-exports.search = (req, res) => {
+module.exports = (req, res) => {
   const form = {
     keyword: req.body.keyword,
     pfArray: req.body.platform,
@@ -15,10 +13,10 @@ exports.search = (req, res) => {
   SearchService.init(res)
     .search(form)
     .then((items) => {
-      console.log("controller: " + items);
-      console.log("正常に処理が完了しました。");
+      console.log('controller: ' + items);
+      console.log('正常に処理が完了しました。');
     })
     .catch((err) => {
-      console.log("エラーが発生しました: " + err.message);
+      console.log('エラーが発生しました: ' + err.message);
     });
 };

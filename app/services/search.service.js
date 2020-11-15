@@ -1,9 +1,9 @@
-const crypto = require("crypto");
-const db = require("../models/index");
+const crypto = require('crypto');
+const db = require('../models/index');
 const Search = db.search;
 const Op = db.Sequelize.Op;
-const Key = require("../constants/search");
-var { PythonShell } = require("python-shell");
+const Key = require('../constants/search');
+var { PythonShell } = require('python-shell');
 
 module.exports = class SearchService {
   /**
@@ -41,7 +41,7 @@ module.exports = class SearchService {
    * @param {*} resultArray
    */
   bulkCreate(resultArr) {
-    console.log("3. 検索結果をDBに登録。");
+    console.log('3. 検索結果をDBに登録。');
 
     var promise = resultArr.map((arr) => {
       return new Promise((resolve, reject) => {
@@ -52,7 +52,7 @@ module.exports = class SearchService {
   }
 
   findOne(hash) {
-    console.log("4. findOneメソッド実行。");
+    console.log('4. findOneメソッド実行。');
     return new Promise((resolve, reject) => {
       Search.findOne({
         where: {
@@ -69,7 +69,7 @@ module.exports = class SearchService {
    * @param {*} form
    */
   findAll(form) {
-    console.log("4. スクレイピング結果の取得。");
+    console.log('4. スクレイピング結果の取得。');
     return new Promise((resolve, reject) => {
       Search.findAll({
         where: {
@@ -95,9 +95,9 @@ module.exports = class SearchService {
    */
   scrape(form) {
     return new Promise((resolve, reject) => {
-      console.log("1. python-shellの呼び出し。");
+      console.log('1. python-shellの呼び出し。');
       var pyshell = new PythonShell(Key.PYTHON_PATH, {
-        mode: "text",
+        mode: 'text',
       });
 
       var json = {
@@ -105,13 +105,13 @@ module.exports = class SearchService {
         keyword: form.keyword,
       };
 
-      console.log("2. フォームデータをpython側に送信。");
+      console.log('2. フォームデータをpython側に送信。');
       pyshell.send(JSON.stringify(json));
 
-      pyshell.on("message", (data) => {
-        console.log("検索結果： " + data);
+      pyshell.on('message', (data) => {
+        console.log('検索結果： ' + data);
 
-        const resultArr = JSON.parse(data || "null");
+        const resultArr = JSON.parse(data || 'null');
         this.bulkCreate(resultArr)
           .then(this.findAll.bind(null, form))
           .then(this.response.bind(this))
@@ -120,26 +120,26 @@ module.exports = class SearchService {
 
       pyshell.end((err) => {
         if (err) reject(err);
-        console.log("7. 一通り処理を終了。");
-        resolve("スクレイピング完了。");
+        console.log('7. 一通り処理を終了。');
+        resolve('スクレイピング完了。');
       });
     });
   }
 
   generateHash(keyword, platform) {
-    console.log("3. ハッシュを生成。");
-    const sha1sum = crypto.createHash("sha1");
+    console.log('3. ハッシュを生成。');
+    const sha1sum = crypto.createHash('sha1');
     sha1sum.update(keyword + platform + Key.HASH_SECRET);
-    return sha1sum.digest("hex");
+    return sha1sum.digest('hex');
   }
 
   moldKeyword(keyword) {
-    console.log("1. 検索キーワードを成形。");
-    return keyword.split(/\s+/).join("_");
+    console.log('1. 検索キーワードを成形。');
+    return keyword.split(/\s+/).join('_');
   }
 
   addFormProps(form, value) {
-    console.log("6. addFormPropsメソッド実行。");
+    console.log('6. addFormPropsメソッド実行。');
 
     return new Promise((resolve, reject) => {
       var hashArr = [];
@@ -160,7 +160,7 @@ module.exports = class SearchService {
   }
 
   createObj(hash, platform, value) {
-    console.log("5. createArrメソッド実行。");
+    console.log('5. createArrメソッド実行。');
 
     return new Promise((resolve, reject) => {
       var obj = {};
@@ -171,7 +171,7 @@ module.exports = class SearchService {
   }
 
   checkCache(form, keyword) {
-    console.log("2. checkCacheメソッド実行。");
+    console.log('2. checkCacheメソッド実行。');
 
     const arr = form.pfArray;
     var promise = arr.map((platform) => {

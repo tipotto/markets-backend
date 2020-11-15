@@ -24,19 +24,27 @@
   },
   "categories": {
     "default": {
-      "appenders": ["ConsoleLogAppender"],
+      "appenders": [
+        "ConsoleLogAppender"
+      ],
       "level": "all"
     },
     "system": {
-      "appenders": ["SystemLogAppender"],
+      "appenders": [
+        "SystemLogAppender"
+      ],
       "level": "info"
     },
     "http": {
-      "appenders": ["HttpLogAppender"],
+      "appenders": [
+        "HttpLogAppender"
+      ],
       "level": "info"
     },
     "access": {
-      "appenders": ["AccessLogAppender"],
+      "appenders": [
+        "AccessLogAppender"
+      ],
       "level": "info"
     }
   }

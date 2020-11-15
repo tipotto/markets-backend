@@ -1,14 +1,14 @@
-var log4js = require("log4js");
+var log4js = require('log4js');
 // var logger = (exports = module.exports = {});
 
 log4js.configure({
   appenders: {
-    out: { type: "stdout" }
+    out: { type: 'stdout' },
   },
   categories: {
-    default: { appenders: ["out"], level: "debug" },
-    errLog: { appenders: ["out"], level: "error" }
-  }
+    default: { appenders: ['out'], level: 'debug' },
+    errLog: { appenders: ['out'], level: 'error' },
+  },
   //   appenders: [
   //     {
   //       type: "file",
