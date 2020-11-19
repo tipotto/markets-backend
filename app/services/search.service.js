@@ -109,7 +109,7 @@ module.exports = class SearchService {
       pyshell.send(JSON.stringify(json));
 
       pyshell.on('message', (data) => {
-        console.log('検索結果： ' + data);
+        console.log('pyshell >>>', data);
 
         const resultArr = JSON.parse(data || 'null');
         this.bulkCreate(resultArr)
