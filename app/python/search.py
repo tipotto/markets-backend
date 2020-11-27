@@ -4,18 +4,14 @@ from bs4 import BeautifulSoup
 import traceback
 from constants import search as const
 
-# get: プロキシを使用する場合、session.getメソッドにproxyプロパティを渡す
 
-
-async def get(url, headers, **kwargs):
+async def get(url, headers, proxy, **kwargs):
     async with ClientSession(headers=headers) as session:
-        async with session.get(url, **kwargs) as resp:
+        async with session.get(url, proxy=proxy, **kwargs) as resp:
             return (await resp.text())
 
 
-def checkPlatform(paramObj):
-    platform = paramObj['platform']
-
+def checkPlatform(platform):
     if platform == const.MERCARI:
         return const.MERCARI_PARAM
     elif platform == const.RAKUTEN:
@@ -67,7 +63,7 @@ def getDetailUrl(cons, item):
     return detailUrl
 
 
-def extract(paramObj, cons, item):
+def extract(cons, item):
     # 商品名の取得
     title = getTitle(cons, item)
 
@@ -80,20 +76,17 @@ def extract(paramObj, cons, item):
     # 詳細ページURLの取得
     detailUrl = getDetailUrl(cons, item)
 
-    data = {
+    return {
         'title': title,
         'price': price,
         'imageUrl': imageUrl,
         'detailUrl': detailUrl,
         'platform': cons['platform'],
-        'hash': paramObj['hash']
     }
 
-    return data
 
-
-async def scrape(sem, query, paramObj, hook=None):
-    cons = checkPlatform(paramObj)
+async def scrape(query, platform, hook=None):
+    cons = checkPlatform(platform)
 
     url = cons['searchUrl'].format(query)
     headers = {
@@ -106,25 +99,25 @@ async def scrape(sem, query, paramObj, hook=None):
 
     # Aiohttpでは、httpプロキシにしか対応していない（socksプロキシ使用不可）
     # プロキシのURLをStringで渡す
-    # proxy = cons['proxy']
+    proxy = "http://127.0.0.1:16379"
 
-    async with sem:
-        page = await get(url, headers, compress=True)
+    # async with sem:
+    page = await get(url, headers, proxy, compress=True)
 
     soup = BeautifulSoup(page, "html.parser")
     items = soup.select(cons['items']['selector'])
 
     item_num = 0
     item_limit = 49
-    resultArray = []
+    results = []
     try:
         for item in items:
             if item_num > item_limit:
                 break
 
             # 各アイテムから必要なデータを抽出
-            resultObj = extract(paramObj, cons, item)
-            resultArray.append(resultObj)
+            result = extract(cons, item)
+            results.append(result)
 
             item_num += 1
 
@@ -138,24 +131,19 @@ async def scrape(sem, query, paramObj, hook=None):
 
         print("Error occurred! Process was cancelled but the added items will be exported to database.")
 
-    if hook:
-        hook(str(resultArray))
-
-    return resultArray
+    return results
 
 
-async def parallel_by_gather(query, paramArr):
-    sem = asyncio.Semaphore(5)
+async def parallel_by_gather(query, platforms):
+    # sem = asyncio.Semaphore(3)
 
-    def notify(resultArray):
-        print("result >>> " + resultArray)
-
-    cors = [scrape(sem, query, p) for p in paramArr]
+    # cors = [scrape(sem, query, p) for p in platforms]
+    cors = [scrape(query, p) for p in platforms]
     results = await asyncio.gather(*cors)
     return results
 
 
-def execute(query, paramArr):
+def execute(query, platforms):
     loop = asyncio.get_event_loop()
-    results = loop.run_until_complete(parallel_by_gather(query, paramArr))
+    results = loop.run_until_complete(parallel_by_gather(query, platforms))
     return results

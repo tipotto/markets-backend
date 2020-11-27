@@ -3,20 +3,21 @@ const SearchService = require('../services/search.service');
 
 module.exports = (req, res) => {
   const form = {
-    keyword: req.body.keyword,
-    pfArray: req.body.platform,
+    query: req.body.keyword,
+    platforms: req.body.platform,
     resultNum: Number(req.body.resultNum),
     sortIndex: req.body.sortIndex,
     sortOrder: req.body.sortOrder,
   };
 
-  SearchService.init(res)
+  SearchService.init()
     .search(form)
-    .then((items) => {
-      console.log('controller: ' + items);
+    .then((results) => {
+      res.status(200).send(results);
       console.log('正常に処理が完了しました。');
     })
     .catch((err) => {
+      // TODO クライアントにエラーを返すように実装
       console.log('エラーが発生しました: ' + err.message);
     });
 };
