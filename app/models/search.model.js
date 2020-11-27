@@ -1,39 +1,17 @@
 module.exports = (sequelize, Sequelize) => {
   const Search = sequelize.define(
-    'items',
+    'search',
     {
-      // id, createdAt, updatedAt はデフォルトで設定される。
-      // id: not null, primary key, auto_increment
-      // name, email, password: デフォルトでは varchar(255) が設定され、
-      // not nullではないので注意。
-
-      // id: {
-      //   type: Sequelize.INTEGER,
-      //   primaryKey: true,
-      //   autoIncrement: true,
-      //   allowNull: false
-      // },
-      title: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      price: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      imageUrl: {
+      results: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        get() {
+          return JSON.parse(this.getDataValue('results'));
+        },
+        set(val) {
+          return this.setDataValue('results', JSON.stringify(val));
+        },
       },
-      detailUrl: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      platform: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      hash: {
+      cacheKey: {
         type: Sequelize.STRING,
         allowNull: false,
       },
@@ -43,10 +21,7 @@ module.exports = (sequelize, Sequelize) => {
       timestamps: false,
       indexes: [
         {
-          fields: ['price'],
-        },
-        {
-          fields: ['hash'],
+          fields: ['cacheKey'],
         },
       ],
     }

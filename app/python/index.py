@@ -7,14 +7,14 @@ def main():
 
     # loads関数：文字列として受け取ったデータを辞書型に変換（デコード）
     data = json.loads(sys.stdin.readline())
-    paramArr = data['paramArr']
-    query = data['keyword']
+    query = data['query']
+    platforms = data['platforms']
 
-    if len(paramArr) == 0:
+    if len(platforms) == 0:
         print(json.dumps([]))
         return
 
-    results = search.execute(query, paramArr)
+    results = search.execute(query, platforms)
     print(json.dumps(list(results), ensure_ascii=False))
 
 

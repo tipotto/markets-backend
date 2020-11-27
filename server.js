@@ -1,12 +1,10 @@
 const express = require('express');
-const log4js = require('log4js');
-const mysql = require('mysql');
+// const log4js = require('log4js');
 const cors = require('cors');
 const app = express();
-const db = require('./app/models/');
+// const db = require('./app/models/');
 const logger = require('./app/config/log4js.config.js');
-const cron = require('node-cron');
-const SearchService = require('./app/services/search.service');
+// const cron = require('node-cron');
 const SearchRoute = require('./app/routes/search.routes');
 
 var corsOptions = {
@@ -22,20 +20,20 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // db.sequelize.sync();
-db.sequelize.sync({ force: true }).then(() => {
-  console.log('Drop and re-sync db.');
-});
+// db.sequelize.sync({ force: true }).then(() => {
+//   console.log('Drop and re-sync db.');
+// });
 
 // 毎日0時にキャッシュを削除
-cron.schedule('0 0 0 * * *', () => {
-  SearchService.deleteAll()
-    .then((value) => {
-      console.log('削除処理が完了しました。');
-    })
-    .catch((err) => {
-      console.log('エラーが発生しました: ' + err.message);
-    });
-});
+// cron.schedule('0 0 0 * * *', () => {
+//   SearchService.deleteAll()
+//     .then((value) => {
+//       console.log('削除処理が完了しました。');
+//     })
+//     .catch((err) => {
+//       console.log('エラーが発生しました: ' + err.message);
+//     });
+// });
 
 // ログ設定
 // log4js.configure("./app/config/log4js.config.json");
@@ -74,6 +72,3 @@ app.listen(PORT, () =>
 );
 
 SearchRoute(app);
-// require("./app/routes/user.routes")(app);
-// TODO item.serviceの内容確認、itemのconstantsの作成などが未完了。
-// require("./app/routes/item.routes")(app);
