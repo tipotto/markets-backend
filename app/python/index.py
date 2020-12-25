@@ -15,6 +15,7 @@ def main():
         return
 
     results = search.execute(query, platforms)
+    # print(json.dumps(results))
     print(json.dumps(list(results), ensure_ascii=False))
 
 
