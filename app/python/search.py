@@ -1,3 +1,4 @@
+# import sys
 import asyncio
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
@@ -11,7 +12,7 @@ async def get(url, headers, proxy, **kwargs):
             return (await resp.text())
 
 
-def checkPlatform(platform):
+def getParamsByPlatform(platform):
     if platform == const.MERCARI:
         return const.MERCARI_PARAM
     elif platform == const.RAKUTEN:
@@ -24,10 +25,9 @@ def getTitle(cons, item):
     titles = item.select(cons['title']['selector'])
 
     if cons['platform'] == const.PAYPAY:
-        title = titles[0].get(cons['title']['attr'])
+        return titles[0].get(cons['title']['attr'])
     else:
-        title = titles[0].contents[0]
-    return title
+        return titles[0].contents[0]
 
 
 def getPrice(cons, item):
@@ -50,17 +50,15 @@ def getDetailUrl(cons, item):
 
     if platform == const.MERCARI:
         details = item.select(detailSelector)
-        detailUrl = siteUrl + details[0].get(detailAttr)
+        return siteUrl + details[0].get(detailAttr)
 
     elif platform == const.RAKUTEN:
         details = item.select(detailSelector)
-        detailUrl = details[0].get(detailAttr)
+        return details[0].get(detailAttr)
 
     else:
         relativePath = item.get(detailAttr)
-        detailUrl = siteUrl + relativePath
-
-    return detailUrl
+        return siteUrl + relativePath
 
 
 def extract(cons, item):
@@ -86,7 +84,7 @@ def extract(cons, item):
 
 
 async def scrape(query, platform, hook=None):
-    cons = checkPlatform(platform)
+    cons = getParamsByPlatform(platform)
 
     url = cons['searchUrl'].format(query)
     headers = {
@@ -103,6 +101,9 @@ async def scrape(query, platform, hook=None):
 
     # async with sem:
     page = await get(url, headers, proxy, compress=True)
+
+    # 取得したHTMLのメモリサイズを確認
+    # print(sys.getsizeof(page))
 
     soup = BeautifulSoup(page, "html.parser")
     items = soup.select(cons['items']['selector'])

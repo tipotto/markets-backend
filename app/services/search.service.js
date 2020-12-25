@@ -45,6 +45,7 @@ module.exports = class SearchService {
 
       pyShell.on('message', async (data) => {
         const results = JSON.parse(data || 'null');
+        // console.log('取得したHTMLのメモリサイズ >>>', results);
         const integrated = this.integrateArray(results);
         const sorted = this.sortArray(integrated, sortOrder);
         resolve(sorted);
