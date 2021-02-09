@@ -3,16 +3,21 @@ const SearchService = require('../services/search.service');
 
 module.exports = (req, res) => {
   const form = {
+    category: req.body.category[0],
     query: req.body.keyword,
-    platforms: req.body.platform,
-    resultNum: Number(req.body.resultNum),
-    sortIndex: req.body.sortIndex,
-    sortOrder: req.body.sortOrder,
+    platforms: req.body.platforms,
+    minPrice: req.body.minPrice,
+    maxPrice: req.body.maxPrice,
+    productStatus: req.body.productStatus,
+    salesStatus: req.body.salesStatus ? req.body.salesStatus : 'selling',
+    deliveryCost: req.body.deliveryCost,
+    sortOrder: req.body.sortOrder ? req.body.sortOrder : 'asc',
   };
 
   SearchService.init()
     .search(form)
     .then((results) => {
+      console.log('results', results);
       res.status(200).send(results);
       console.log('正常に処理が完了しました。');
     })
