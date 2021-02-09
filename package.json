@@ -10,14 +10,15 @@
     "dev": "yarn run npm-run-all -p dev:*",
     "dev:client": "yarn --cwd ~/workspace/markets/client start",
     "dev:server": "yarn run nodemon -L server.js",
-    "proxy": "cd ~/multitor && sudo multitor --init 3 --user debian-tor --socks-port 9000 --control-port 9900",
     "server": "cd ~/multitor && sudo multitor --init 3 --user debian-tor --socks-port 9000 --control-port 9900 && cd ~/workspace/markets/server && node server.js",
     "start": "yarn run nodemon -L server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
+    "csrf": "^3.1.0",
     "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "log4js": "^6.3.0",
     "mysql": "^2.18.1",
     "node-cron": "^2.0.3",
