@@ -113,26 +113,29 @@ def extract(const, item):
 
 
 def add_query_prefix(query, isPrefix):
+    if not query:
+        return ''
+
     return ('?' + query) if isPrefix is False else ('&' + query)
 
 
 def get_formatted_query(key, value, const):
-    if value == '0':
-        return ''
-
     # query > search, minPrice, maxPrice で使用
     return const['query'][key].format(value)
 
 
-def get_paypay_query_for_product_status(key, valueArr, platform, const, prefix):
+def get_query_for_product_status_for_paypay(key, value, platform, const, prefix):
     path = ''
-    if ('all' in valueArr):
+    if ('all' in value):
         path = const['query'][key]['all']
 
     else:
         isPrefix = prefix
-        for status in valueArr:
+        for status in value:
             q = const['query'][key][status]
+
+            if not q:
+                continue
 
             path += add_query_prefix(q, isPrefix)
 
@@ -142,25 +145,33 @@ def get_paypay_query_for_product_status(key, valueArr, platform, const, prefix):
     return path
 
 
-def get_query_for_product_status(key, valueArr, platform, const):
+def get_query_for_product_status(key, value, platform, const):
     path = ''
-    if ('all' in valueArr):
-        # 空文字が返される
+    if ('all' in value):
         path = const['query'][key]['all']
 
     else:
-        for status in valueArr:
-            path += const['query'][key][status]
+        for status in value:
+            q = const['query'][key][status]
+
+            if not q:
+                continue
+
+            path += q
 
     return path
 
 
-def generate_paypay_query(form, platform, const):
+def generate_query_for_paypay(form, platform, const):
 
     query = ''
     isPrefix = False
     for key, value in form.items():
         if key == 'query' or key == 'platforms':
+            continue
+
+        # lenメソッド: 文字列の空文字、NULL判定や、配列の要素数の判定を行う
+        if len(value) == 0:
             continue
 
         path = ''
@@ -170,24 +181,27 @@ def generate_paypay_query(form, platform, const):
             if not q:
                 continue
 
-            path = add_query_prefix(q, isPrefix)
+            path += add_query_prefix(q, isPrefix)
+
+            if isPrefix is False:
+                isPrefix = True
 
         elif key == 'minPrice' or key == 'maxPrice':
             q = get_formatted_query(key, value, const)
+            path += add_query_prefix(q, isPrefix)
 
-            if not q:
-                continue
-
-            path = add_query_prefix(q, isPrefix)
+            if isPrefix is False:
+                isPrefix = True
 
         elif key == 'productStatus':
-            q = get_paypay_query_for_product_status(
+            path = get_query_for_product_status_for_paypay(
                 key, value, platform, const, isPrefix)
 
-            if not q:
+            if not path:
                 continue
 
-            path = q
+            if isPrefix is False:
+                isPrefix = True
 
         else:
             q = const['query'][key][value]
@@ -195,10 +209,10 @@ def generate_paypay_query(form, platform, const):
             if not q:
                 continue
 
-            path = add_query_prefix(q, isPrefix)
+            path += add_query_prefix(q, isPrefix)
 
-        if isPrefix is False:
-            isPrefix = True
+            if isPrefix is False:
+                isPrefix = True
 
         query += path
 
@@ -207,22 +221,26 @@ def generate_paypay_query(form, platform, const):
 
 def get_query_for_category(key, value, const):
 
-    mainValue = value['main']
-    subValue = value['sub']
+    main = value['main']
+    sub = value['sub']
 
-    if not mainValue:
+    if not main:
         return ''
 
-    if not subValue:
-        return const['query'][key][mainValue]
+    if not sub:
+        return const['query'][key][main]
 
-    return const['query'][key][mainValue][subValue]
+    return const['query'][key][main][sub]
 
 
 def generate_query(form, platform, const):
     query = ''
     for key, value in form.items():
         if key == 'query' or key == 'platforms':
+            continue
+
+        # lenメソッド: 文字列の空文字、NULL判定や、配列の要素数の判定を行う
+        if len(value) == 0:
             continue
 
         path = ''
@@ -245,7 +263,7 @@ def generate_query(form, platform, const):
 
 def generate_search_query(form, platform, const):
     if platform == paypay.SERVICE_NAME:
-        return generate_paypay_query(form, platform, const)
+        return generate_query_for_paypay(form, platform, const)
 
     return generate_query(form, platform, const)
 
@@ -276,11 +294,15 @@ async def scrape(form, platform, hook=None):
     # page = await get(url, headers, proxy, compress=True)
     page = await get(url, headers, compress=True)
 
+    # print('page', page)
+
     # 取得したHTMLのメモリサイズを確認
     # print(sys.getsizeof(page))
 
     soup = BeautifulSoup(page, common.HTML_PARSER)
     items = soup.select(const['items']['selector'], limit=common.ITEM_NUMBER)
+
+    # print('items', items)
 
     # counter = 0
     try:
@@ -296,7 +318,8 @@ async def scrape(form, platform, hook=None):
             # if counter == 6:
             #     raise Exception
 
-    except Exception:
+    except Exception as e:
+        print('Error occurred:', e)
         # with open(r"./app/log/error.log", 'a') as f:
         #     traceback.print_exc(file=f)
 
@@ -306,14 +329,20 @@ async def scrape(form, platform, hook=None):
             'error': traceback.format_exc()
         }
 
+        # print("Error occurred while fetching search results.")
+
+    # return results
+
 
 async def parallel_by_gather(form):
     # sem = asyncio.Semaphore(3)
-    # cors = [scrape(sem, query, p) for p in platforms]
 
-    cors = [scrape(form, p) for p in form['platforms']]
-    await asyncio.gather(*cors)
+    platforms = form['platforms']
+
+    # cors = [scrape(sem, query, p) for p in platforms]
+    cors = [scrape(form, p) for p in platforms]
     # results = await asyncio.gather(*cors)
+    await asyncio.gather(*cors)
     # return results
 
 
@@ -321,37 +350,51 @@ def execute(form):
     loop = asyncio.get_event_loop()
     # results = loop.run_until_complete(parallel_by_gather(form))
     loop.run_until_complete(parallel_by_gather(form))
-    return {
+    result = {
         'status': 'success',
         'results': results,
         'error': ''
     }
+    print('result', result)
 
 
-# メソッドの動作確認用
-# if __name__ == "__main__":
+# # メソッドの動作確認用
+if __name__ == "__main__":
 
-#     form = {
-#         'category': {'main': 'pet', 'sub': ''},
-#         'query': '日向坂46 斎藤京子',
-#         # platforms: mercari, rakuma, paypay
-#         'platforms': ['paypay'],
-#         'minPrice': '0',
-#         'maxPrice': '0',
-#         'productStatus': ['all', 'brand_new', 'almost_unused', 'no_scratches_or_stains'],
-#         'salesStatus': 'selling',
-#         'deliveryCost': 'all',
-#         'sortOrder': 'asc'
-#     }
+    form = {
+        'category': {'main': '', 'sub': ''},
+        'query': '日向坂46 斎藤京子',
+        # platforms: mercari, rakuma, paypay
+        'platforms': ['paypay'],
+        'minPrice': '0',
+        'maxPrice': '0',
+        'productStatus': ['all'],
+        'salesStatus': 'selling',
+        'deliveryCost': 'all',
+        'sortOrder': 'asc'
+    }
 
-#     # execute(form)
+    # execute(form)
 
-#     try:
-#         platform = 'paypay'
-#         const = get_params_by_platform(platform)
-#         url = generate_search_url(form, platform, const)
-#         print('url', url)
+    try:
+        platform = 'paypay'
+        const = get_params_by_platform(platform)
+        url = generate_search_url(form, platform, const)
+        print('url', url)
 
-#     except Exception as e:
-#         print('Error occurred:', e)
-#         print('traceback', traceback.format_exc())
+    except Exception as e:
+        print('Error occurred:', e)
+
+        print('traceback', traceback.format_exc())
+
+    # platforms = form['platforms']
+
+    # for p in platforms:
+    #     print('1. platform', p)
+
+    #     const = get_params_by_platform(p)
+    #     headers = generate_headers(const)
+    #     r = requests.get('http://whatismyheader.com/', headers=headers)
+
+    #     print("4. headers", headers)
+    #     print("5. request header", r.text)

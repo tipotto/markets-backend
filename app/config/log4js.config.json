@@ -20,31 +20,34 @@
       "filename": "./app/log/access/access.log",
       "pattern": ".yyyy-MM-dd",
       "daysToKeep": 7
+    },
+    "ErrorLogAppender": {
+      "type": "file",
+      "filename": "./app/log/error.log",
+      "maxLogSize": 5000000,
+      "backups": 3
+    },
+    "ErrorLogWrapper": {
+      "type": "logLevelFilter",
+      "appender": "ErrorLogAppender",
+      "level": "error"
     }
   },
   "categories": {
     "default": {
-      "appenders": [
-        "ConsoleLogAppender"
-      ],
+      "appenders": ["ConsoleLogAppender"],
       "level": "all"
     },
     "system": {
-      "appenders": [
-        "SystemLogAppender"
-      ],
+      "appenders": ["SystemLogAppender", "ErrorLogWrapper"],
       "level": "info"
     },
     "http": {
-      "appenders": [
-        "HttpLogAppender"
-      ],
+      "appenders": ["HttpLogAppender", "ErrorLogWrapper"],
       "level": "info"
     },
     "access": {
-      "appenders": [
-        "AccessLogAppender"
-      ],
+      "appenders": ["AccessLogAppender", "ErrorLogWrapper"],
       "level": "info"
     }
   }
