@@ -16,7 +16,7 @@
         "json/json-with-comments-files": [".vscode/**"]
     },
     "rules": {
-        "prettier/prettier": ["error", { "singleQuote": true, "trailingComma": "es5" }],
+        "prettier/prettier": ["error", { "singleQuote": false, "trailingComma": "es5" }],
         "node/exports-style": ["error", "module.exports"],
         "node/no-deprecated-api": "error",
         "node/no-missing-require": "error",
