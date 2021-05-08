@@ -1,9 +1,10 @@
 import traceback
 import asyncio
+import random
+import uuid
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from constants import common, mercari, rakuma, paypay
-import random
 from fake_headers import Headers
 
 results = []
@@ -36,6 +37,7 @@ def generate_headers(const):
 #         async with session.get(url, proxy=proxy, **kwargs) as resp:
 #             return (await resp.text())
 
+
 async def get(url, headers, **kwargs):
     async with ClientSession(headers=headers) as session:
         async with session.get(url, **kwargs) as resp:
@@ -63,8 +65,9 @@ def get_title(const, item):
 def get_price(const, item):
     prices = item.select(const['price']['selector'])
     price = prices[0].contents[0]
-    return int(price.replace("¥", "").replace(
-        " ", "").replace(",", ""))
+    price_str = price.replace("¥", "").replace(" ", "")
+    price_int = int(price_str.replace(",", ""))
+    return {'str': price_str, 'int': price_int}
 
 
 def get_image_url(const, item):
@@ -104,11 +107,13 @@ def extract(const, item):
     detailUrl = get_detail_url(const, item)
 
     return {
+        'id': str(uuid.uuid4()),
         'title': title,
         'price': price,
         'imageUrl': imageUrl,
         'detailUrl': detailUrl,
         'platform': const['platform'],
+        'isFavorite': False
     }
 
 
@@ -116,15 +121,18 @@ def add_query_prefix(query, isPrefix):
     return ('?' + query) if isPrefix is False else ('&' + query)
 
 
-def get_formatted_query(key, value, const):
-    if value == '0':
+def get_search_query(key, formValue, const):
+    return const['query']['search'].format(formValue['page'], formValue['keyword'])
+
+
+def get_price_query(key, value, const):
+    if value == 0:
         return ''
 
-    # query > search, minPrice, maxPrice で使用
     return const['query'][key].format(value)
 
 
-def get_paypay_query_for_product_status(key, valueArr, platform, const, prefix):
+def get_rakuma_query_for_product_status(key, valueArr, platform, const, prefix):
     path = ''
     if ('all' in valueArr):
         path = const['query'][key]['all']
@@ -155,12 +163,12 @@ def get_query_for_product_status(key, valueArr, platform, const):
     return path
 
 
-def generate_paypay_query(form, platform, const):
+def generate_rakuma_query(form, platform, const):
 
     query = ''
     isPrefix = False
     for key, value in form.items():
-        if key == 'query' or key == 'platforms':
+        if key == 'page' or key == 'keyword' or key == 'platforms':
             continue
 
         path = ''
@@ -173,7 +181,7 @@ def generate_paypay_query(form, platform, const):
             path = add_query_prefix(q, isPrefix)
 
         elif key == 'minPrice' or key == 'maxPrice':
-            q = get_formatted_query(key, value, const)
+            q = get_price_query(key, value, const)
 
             if not q:
                 continue
@@ -181,7 +189,7 @@ def generate_paypay_query(form, platform, const):
             path = add_query_prefix(q, isPrefix)
 
         elif key == 'productStatus':
-            q = get_paypay_query_for_product_status(
+            q = get_rakuma_query_for_product_status(
                 key, value, platform, const, isPrefix)
 
             if not q:
@@ -222,7 +230,7 @@ def get_query_for_category(key, value, const):
 def generate_query(form, platform, const):
     query = ''
     for key, value in form.items():
-        if key == 'query' or key == 'platforms':
+        if key == 'page' or key == 'keyword' or key == 'platforms':
             continue
 
         path = ''
@@ -230,7 +238,7 @@ def generate_query(form, platform, const):
             path = get_query_for_category(key, value, const)
 
         elif key == 'minPrice' or key == 'maxPrice':
-            path = get_formatted_query(key, value, const)
+            path = get_price_query(key, value, const)
 
         elif key == 'productStatus':
             path = get_query_for_product_status(key, value, platform, const)
@@ -244,8 +252,8 @@ def generate_query(form, platform, const):
 
 
 def generate_search_query(form, platform, const):
-    if platform == paypay.SERVICE_NAME:
-        return generate_paypay_query(form, platform, const)
+    if platform == rakuma.SERVICE_NAME:
+        return generate_rakuma_query(form, platform, const)
 
     return generate_query(form, platform, const)
 
@@ -253,7 +261,7 @@ def generate_search_query(form, platform, const):
 def generate_search_url(form, platform, const):
 
     siteUrl = const['siteUrl']
-    q = get_formatted_query('search', form['query'], const)
+    q = get_search_query('search', form, const)
 
     path = siteUrl + q
 
@@ -266,39 +274,21 @@ async def scrape(form, platform, hook=None):
 
     const = get_params_by_platform(platform)
     headers = generate_headers(const)
-
-    # Aiohttpでは、httpプロキシにしか対応していない（socksプロキシ使用不可）
-    # proxy = common.PROXY
-
     url = generate_search_url(form, platform, const)
 
-    # async with sem:
-    # page = await get(url, headers, proxy, compress=True)
     page = await get(url, headers, compress=True)
-
-    # 取得したHTMLのメモリサイズを確認
-    # print(sys.getsizeof(page))
+    # page = await get(url, headers, common.PROXY, compress=True)
 
     soup = BeautifulSoup(page, common.HTML_PARSER)
-    items = soup.select(const['items']['selector'], limit=common.ITEM_NUMBER)
+    items = soup.select(const['items']['selector'])
 
-    # counter = 0
     try:
         for item in items:
 
-            # 各アイテムから必要なデータを抽出
             result = extract(const, item)
             results.append(result)
 
-            # counter += 1
-
-            # 例外処理の挙動を確認するために、故意に例外を発生させる。
-            # if counter == 6:
-            #     raise Exception
-
     except Exception:
-        # with open(r"./app/log/error.log", 'a') as f:
-        #     traceback.print_exc(file=f)
 
         return {
             'status': 'failure',
@@ -308,18 +298,12 @@ async def scrape(form, platform, hook=None):
 
 
 async def parallel_by_gather(form):
-    # sem = asyncio.Semaphore(3)
-    # cors = [scrape(sem, query, p) for p in platforms]
-
     cors = [scrape(form, p) for p in form['platforms']]
     await asyncio.gather(*cors)
-    # results = await asyncio.gather(*cors)
-    # return results
 
 
 def execute(form):
     loop = asyncio.get_event_loop()
-    # results = loop.run_until_complete(parallel_by_gather(form))
     loop.run_until_complete(parallel_by_gather(form))
     return {
         'status': 'success',

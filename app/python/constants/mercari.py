@@ -12,7 +12,9 @@ DATA = {
     'referer': SITE_URL + '/jp/',
     'proxy': PROXY['tor'],
     'query': {
-        'search': '/jp/search/?keyword={}',
+        'search': '/jp/search/?page={0}&keyword={1}',
+        # 'search': '/jp/search/?keyword={}',
+        # 'search': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc',
         'category': {
             'all': '&category_root=',
             'fashion': {
@@ -90,7 +92,8 @@ DATA = {
         },
         'deliveryCost': {
             'all': '&shipping_payer_all=1&shipping_payer_id%5B1%5D=1&shipping_payer_id%5B2%5D=1',
-            'free': '&shipping_payer_id%5B2%5D=1'
+            'free': '&shipping_payer_id%5B2%5D=1',
+            'required': '&shipping_payer_id%5B1%5D=1'
         },
         'sortOrder': {
             'asc': '&sort_order=price_asc',

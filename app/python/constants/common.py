@@ -2,7 +2,8 @@ PROXY = "http://127.0.0.1:16379"
 
 HTML_PARSER = "html.parser"
 
-ITEM_NUMBER = 100
+# ALL_ITEM_NUMBER = 100
+# LIKES_ITEM_NUMBER = 30
 
 OS_LIST = ['win', 'mac']
 BROWSER_LIST = ['chrome', 'firefox']

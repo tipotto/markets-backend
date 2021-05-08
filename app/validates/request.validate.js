@@ -3,21 +3,25 @@ const ValidateService = require("../services/validate.service");
 const SearchParam = require("./search.param");
 
 module.exports = [
+  check("page")
+    .isInt({ min: 1, max: 10, leading_zeroes: false })
+    .withMessage("Page number is invalid."),
   check("category")
-    .isArray({ min: 1, max: 1 })
+    .isObject()
     .custom((arr) => {
-      return ValidateService.checkObjElems(arr);
+      return ValidateService.checkObject(arr);
     })
-    .withMessage("Category should be the array that has at least one object."),
+    .withMessage(
+      "Category should be the object that has specific keys and values."
+    ),
   check("keyword").notEmpty().withMessage("Search keyword is required."),
   check("platforms")
     .isArray({ min: 1, max: 3 })
     .custom((arr) => {
-      return ValidateService.checkArrElems(SearchParam.platforms, arr);
+      return ValidateService.checkArray(SearchParam.platforms, arr);
     })
     .withMessage("Platforms are required."),
   check("minPrice")
-    .isString()
     .isInt({ min: 0, max: 99999999, leading_zeroes: false })
     .isCurrency({
       // symbol: '¥',  // 通貨シンボル
@@ -27,7 +31,6 @@ module.exports = [
     })
     .withMessage("Min-price is invalid."),
   check("maxPrice")
-    .isString()
     .isInt({ min: 0, max: 99999999, leading_zeroes: false })
     .isCurrency({
       // symbol: '¥',  // 通貨シンボル
@@ -37,9 +40,9 @@ module.exports = [
     })
     .withMessage("Max-price is invalid."),
   check("productStatus")
-    .isArray({ min: 0, max: 6 })
+    .isArray({ min: 1, max: 6 })
     .custom((arr) => {
-      return ValidateService.checkArrElems(SearchParam.productStatuses, arr);
+      return ValidateService.checkArray(SearchParam.productStatuses, arr);
     })
     .withMessage("Product status is invalid."),
   check("salesStatus")

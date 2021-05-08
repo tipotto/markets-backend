@@ -6,10 +6,12 @@ const numCPUs = require("os").cpus().length;
 const logger = require("./app/config/log4js.config.js");
 const systemLogger = logger.system;
 const accessLogger = logger.access;
-const SearchController = require("./app/controllers/search.controller.js");
-const SearchValidator = require("./app/validates/search.validate");
-const AuthorizeController = require("./app/controllers/authorize.controller");
 const AccessController = require("./app/controllers/access.controller");
+const AuthorizeController = require("./app/controllers/authorize.controller");
+const RequestController = require("./app/controllers/request.controller");
+const RequestValidator = require("./app/validates/request.validate");
+const SearchController = require("./app/controllers/search.controller.js");
+
 require("dotenv").config();
 const port = process.env.PORT || 8080;
 
@@ -59,9 +61,14 @@ if (cluster.isMaster) {
     res.sendFile(path.join(__dirname, "./client/build/index.html"));
   });
 
-  app.post("/api/search/v1", AuthorizeController);
+  app.post("/api/v1/search", AuthorizeController);
 
-  app.post("/api/search/v1", SearchValidator, SearchController);
+  app.post(
+    "/api/v1/search",
+    RequestController,
+    RequestValidator,
+    SearchController
+  );
 
   // process.env.PORT がundefinedになっている
   app.listen(port, () =>

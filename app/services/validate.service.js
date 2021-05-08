@@ -1,8 +1,7 @@
 const SearchParam = require("../validates/search.param");
 
 module.exports = class ValidateService {
-  static checkObjElems(arr) {
-    const obj = arr[0];
+  static checkObject(obj) {
     if (typeof obj !== "object") return false;
     if (Object.keys(obj).length !== 2) return false;
 
@@ -10,6 +9,8 @@ module.exports = class ValidateService {
       if (!SearchParam.categoryObjKeys.includes(key)) return false;
 
       const value = obj[key];
+      if (!value) return true;
+
       if (key === "main") {
         if (SearchParam.mainCategories.includes(value)) return true;
       } else {
@@ -21,16 +22,11 @@ module.exports = class ValidateService {
     return objArr.includes(false) ? false : true;
   }
 
-  static checkArrElems(arr, targetArr) {
-    if (!targetArr.length) return true;
+  static checkArray(arr, targetArr) {
+    if (!targetArr.length) return false;
     const elemArr = targetArr.map((value) => {
       return arr.includes(value);
     });
     return elemArr.includes(false) ? false : true;
   }
-
-  //   static checkCurrency(value) {
-  //     if (!value) return "0";
-  //     return value;
-  //   }
 };

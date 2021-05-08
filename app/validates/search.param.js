@@ -23,7 +23,6 @@ module.exports = {
     "dvd",
     "book-magazine-cartoon",
     "ticket",
-    "",
   ],
   subCategories: [
     "ladies",
@@ -53,7 +52,6 @@ module.exports = {
     "book",
     "magazine",
     "cartoon",
-    "",
   ],
   platforms: ["mercari", "rakuma", "paypay"],
   productStatuses: [
@@ -64,7 +62,7 @@ module.exports = {
     "slight_scratches_or_stains",
     "noticeable_scratches_or_stains",
   ],
-  salesStatuses: ["all", "selling", "soldout", ""],
-  deliveryCosts: ["all", "free", ""],
-  sortOrders: ["asc", "desc", ""],
+  salesStatuses: ["all", "selling", "soldout"],
+  deliveryCosts: ["all", "free", "required"],
+  sortOrders: ["asc", "desc"],
 };
