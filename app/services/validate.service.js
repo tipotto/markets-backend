@@ -1,16 +1,17 @@
-const SearchParam = require("../validates/search.param");
+const SearchParam = require('../validates/search.param');
 
 module.exports = class ValidateService {
-  static checkObjElems(arr) {
-    const obj = arr[0];
-    if (typeof obj !== "object") return false;
+  static checkObject(obj) {
+    if (typeof obj !== 'object') return false;
     if (Object.keys(obj).length !== 2) return false;
 
     const objArr = Object.keys(obj).map((key) => {
       if (!SearchParam.categoryObjKeys.includes(key)) return false;
 
       const value = obj[key];
-      if (key === "main") {
+      if (!value) return true;
+
+      if (key === 'main') {
         if (SearchParam.mainCategories.includes(value)) return true;
       } else {
         if (SearchParam.subCategories.includes(value)) return true;
@@ -21,16 +22,11 @@ module.exports = class ValidateService {
     return objArr.includes(false) ? false : true;
   }
 
-  static checkArrElems(arr, targetArr) {
-    if (!targetArr.length) return true;
+  static checkArray(arr, targetArr) {
+    if (!targetArr.length) return false;
     const elemArr = targetArr.map((value) => {
       return arr.includes(value);
     });
     return elemArr.includes(false) ? false : true;
   }
-
-  //   static checkCurrency(value) {
-  //     if (!value) return "0";
-  //     return value;
-  //   }
 };

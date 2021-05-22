@@ -1,10 +1,10 @@
-const { PythonShell } = require("python-shell");
-const PyShellError = require("../exceptions/PyShellError");
-const ParseError = require("../exceptions/ParseError");
+const { PythonShell } = require('python-shell');
+const PyShellError = require('../exceptions/PyShellError');
+const ParseError = require('../exceptions/ParseError');
 
 module.exports = class SearchService {
   constructor() {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === 'development') {
       return (this.pyScriptPath = process.env.DEV_PYTHON_SCRIPT);
     }
     this.pyScriptPath = process.env.PROD_PYTHON_SCRIPT;
@@ -14,22 +14,22 @@ module.exports = class SearchService {
     return new SearchService();
   }
 
-  sortInAscOrder(data) {
-    return data.sort((a, b) => (a.price < b.price ? -1 : 1));
+  sortInAscOrder(arr) {
+    return arr.sort((a, b) => (a.price.int < b.price.int ? -1 : 1));
   }
 
-  sortInDescOrder(data) {
-    return data.sort((a, b) => (a.price > b.price ? -1 : 1));
+  sortInDescOrder(arr) {
+    return arr.sort((a, b) => (a.price.int > b.price.int ? -1 : 1));
   }
 
-  sortArray(data, sortOrder) {
-    console.log("3. 検索結果をソート。");
-    // if (!data.length) return data;
+  sortArray(arr, sortOrder) {
+    // console.log('3. 検索結果をソート。');
+    if (!arr.length) return arr;
 
-    if (sortOrder === "asc") {
-      return this.sortInAscOrder(data);
+    if (sortOrder === 'asc') {
+      return this.sortInAscOrder(arr);
     }
-    return this.sortInDescOrder(data);
+    return this.sortInDescOrder(arr);
   }
 
   // integrateArray(resultArr) {
@@ -44,20 +44,19 @@ module.exports = class SearchService {
 
   scrape(form) {
     return new Promise((resolve, reject) => {
-      console.log("pyScriptPath", this.pyScriptPath);
-      console.log("1. python-shellの呼び出し。");
+      // console.log('pyScriptPath', this.pyScriptPath);
+      // console.log('1. python-shellの呼び出し。');
       const pyShell = new PythonShell(this.pyScriptPath, {
-        mode: "text",
+        mode: 'text',
       });
 
-      console.log("2. フォームデータをpython側に送信。");
+      // console.log('2. フォームデータをpython側に送信。');
       pyShell.send(JSON.stringify(form));
 
-      pyShell.on("message", async (data) => {
+      pyShell.on('message', async (data) => {
         try {
-          // throw new Error("Make error occur on purpose.");
-          let results = JSON.parse(data || "null");
-          console.log("results", results);
+          let parsed = JSON.parse(data || 'null');
+          // console.log('result', parsed);
 
           // Scrapyの場合
           // resultsには配列が返ってくる
@@ -69,11 +68,11 @@ module.exports = class SearchService {
           // const integrated = this.integrateArray(results);
           // const sorted = this.sortArray(integrated, form.sortOrder);
 
-          const sorted = this.sortArray(results.results, form.sortOrder);
-          results.results = sorted;
-          resolve(results);
+          const sorted = this.sortArray(parsed.results, form.sortOrder);
+          parsed.results = sorted;
+          resolve(parsed);
         } catch (e) {
-          console.log("JSON parse error:", e);
+          // console.log('JSON parse error:', e);
           reject(new ParseError(e));
         }
       });
@@ -82,10 +81,10 @@ module.exports = class SearchService {
         if (e) {
           // この時点でのエラーにはPythonのトレースバックも含まれるが、
           // コントローラー側でログに出力する際に削除される。
-          console.log("Python Shell error", e);
+          // console.log('Python Shell error', e);
           reject(new PyShellError(e));
         }
-        console.log("4. 一通り処理を終了。");
+        // console.log('4. 一通り処理を終了。');
       });
     });
   }

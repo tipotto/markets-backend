@@ -1,4 +1,4 @@
-const accessLogger = require("../config/log4js.config.js").access;
+const accessLogger = require('../config/log4js.config.js').access;
 
 module.exports = (req, res, next) => {
   if (!req || !req.method || !req.headers) {
@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
     return;
   }
 
-  if (req.method === "GET" || req.method === "DELETE") {
+  if (req.method === 'GET' || req.method === 'DELETE') {
     accessLogger.info(req.query);
   } else {
     accessLogger.info(req.body);
