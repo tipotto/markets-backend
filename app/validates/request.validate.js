@@ -1,27 +1,27 @@
-const { check } = require("express-validator");
-const ValidateService = require("../services/validate.service");
-const SearchParam = require("./search.param");
+const { check } = require('express-validator');
+const ValidateService = require('../services/validate.service');
+const SearchParam = require('./search.param');
 
 module.exports = [
-  check("page")
+  check('page')
     .isInt({ min: 1, max: 10, leading_zeroes: false })
-    .withMessage("Page number is invalid."),
-  check("category")
+    .withMessage('Page number is invalid.'),
+  check('category')
     .isObject()
     .custom((arr) => {
       return ValidateService.checkObject(arr);
     })
     .withMessage(
-      "Category should be the object that has specific keys and values."
+      'Category should be the object that has specific keys and values.',
     ),
-  check("keyword").notEmpty().withMessage("Search keyword is required."),
-  check("platforms")
+  check('keyword').notEmpty().withMessage('Search keyword is required.'),
+  check('platforms')
     .isArray({ min: 1, max: 3 })
     .custom((arr) => {
       return ValidateService.checkArray(SearchParam.platforms, arr);
     })
-    .withMessage("Platforms are required."),
-  check("minPrice")
+    .withMessage('Platforms are required.'),
+  check('minPrice')
     .isInt({ min: 0, max: 99999999, leading_zeroes: false })
     .isCurrency({
       // symbol: '¥',  // 通貨シンボル
@@ -29,8 +29,8 @@ module.exports = [
       allow_negatives: false, // マイナスの数字はOKかどうか
       allow_decimal: false, // 小数点はOKかどうか
     })
-    .withMessage("Min-price is invalid."),
-  check("maxPrice")
+    .withMessage('Min-price is invalid.'),
+  check('maxPrice')
     .isInt({ min: 0, max: 99999999, leading_zeroes: false })
     .isCurrency({
       // symbol: '¥',  // 通貨シンボル
@@ -38,23 +38,23 @@ module.exports = [
       allow_negatives: false, // マイナスの数字はOKかどうか
       allow_decimal: false, // 小数点はOKかどうか
     })
-    .withMessage("Max-price is invalid."),
-  check("productStatus")
+    .withMessage('Max-price is invalid.'),
+  check('productStatus')
     .isArray({ min: 1, max: 6 })
     .custom((arr) => {
       return ValidateService.checkArray(SearchParam.productStatuses, arr);
     })
-    .withMessage("Product status is invalid."),
-  check("salesStatus")
+    .withMessage('Product status is invalid.'),
+  check('salesStatus')
     .isString()
     .isIn(SearchParam.salesStatuses)
-    .withMessage("Sales status is invalid."),
-  check("deliveryCost")
+    .withMessage('Sales status is invalid.'),
+  check('deliveryCost')
     .isString()
     .isIn(SearchParam.deliveryCosts)
-    .withMessage("Delivery cost is invalid."),
-  check("sortOrder")
+    .withMessage('Delivery cost is invalid.'),
+  check('sortOrder')
     .isString()
     .isIn(SearchParam.sortOrders)
-    .withMessage("Sort order is invalid."),
+    .withMessage('Sort order is invalid.'),
 ];

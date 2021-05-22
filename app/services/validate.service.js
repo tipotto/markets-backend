@@ -1,8 +1,8 @@
-const SearchParam = require("../validates/search.param");
+const SearchParam = require('../validates/search.param');
 
 module.exports = class ValidateService {
   static checkObject(obj) {
-    if (typeof obj !== "object") return false;
+    if (typeof obj !== 'object') return false;
     if (Object.keys(obj).length !== 2) return false;
 
     const objArr = Object.keys(obj).map((key) => {
@@ -11,7 +11,7 @@ module.exports = class ValidateService {
       const value = obj[key];
       if (!value) return true;
 
-      if (key === "main") {
+      if (key === 'main') {
         if (SearchParam.mainCategories.includes(value)) return true;
       } else {
         if (SearchParam.subCategories.includes(value)) return true;

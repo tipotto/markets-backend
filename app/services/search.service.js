@@ -1,10 +1,10 @@
-const { PythonShell } = require("python-shell");
-const PyShellError = require("../exceptions/PyShellError");
-const ParseError = require("../exceptions/ParseError");
+const { PythonShell } = require('python-shell');
+const PyShellError = require('../exceptions/PyShellError');
+const ParseError = require('../exceptions/ParseError');
 
 module.exports = class SearchService {
   constructor() {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === 'development') {
       return (this.pyScriptPath = process.env.DEV_PYTHON_SCRIPT);
     }
     this.pyScriptPath = process.env.PROD_PYTHON_SCRIPT;
@@ -23,10 +23,10 @@ module.exports = class SearchService {
   }
 
   sortArray(arr, sortOrder) {
-    console.log("3. 検索結果をソート。");
+    // console.log('3. 検索結果をソート。');
     if (!arr.length) return arr;
 
-    if (sortOrder === "asc") {
+    if (sortOrder === 'asc') {
       return this.sortInAscOrder(arr);
     }
     return this.sortInDescOrder(arr);
@@ -44,19 +44,19 @@ module.exports = class SearchService {
 
   scrape(form) {
     return new Promise((resolve, reject) => {
-      console.log("pyScriptPath", this.pyScriptPath);
-      console.log("1. python-shellの呼び出し。");
+      // console.log('pyScriptPath', this.pyScriptPath);
+      // console.log('1. python-shellの呼び出し。');
       const pyShell = new PythonShell(this.pyScriptPath, {
-        mode: "text",
+        mode: 'text',
       });
 
-      console.log("2. フォームデータをpython側に送信。");
+      // console.log('2. フォームデータをpython側に送信。');
       pyShell.send(JSON.stringify(form));
 
-      pyShell.on("message", async (data) => {
+      pyShell.on('message', async (data) => {
         try {
-          let parsed = JSON.parse(data || "null");
-          console.log("result", parsed);
+          let parsed = JSON.parse(data || 'null');
+          // console.log('result', parsed);
 
           // Scrapyの場合
           // resultsには配列が返ってくる
@@ -72,7 +72,7 @@ module.exports = class SearchService {
           parsed.results = sorted;
           resolve(parsed);
         } catch (e) {
-          console.log("JSON parse error:", e);
+          // console.log('JSON parse error:', e);
           reject(new ParseError(e));
         }
       });
@@ -81,10 +81,10 @@ module.exports = class SearchService {
         if (e) {
           // この時点でのエラーにはPythonのトレースバックも含まれるが、
           // コントローラー側でログに出力する際に削除される。
-          console.log("Python Shell error", e);
+          // console.log('Python Shell error', e);
           reject(new PyShellError(e));
         }
-        console.log("4. 一通り処理を終了。");
+        // console.log('4. 一通り処理を終了。');
       });
     });
   }
