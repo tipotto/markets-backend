@@ -1,19 +1,19 @@
 steps:
+  # - name: 'bash'
+  #   args: ['./cloudbuild.sh']
   - name: 'bash'
-    args: ['./cloudbuild.sh']
+    args: ['echo', 'PORT=8080', '>', '.env']
+  - name: 'bash'
+    args:
+      [
+        'echo',
+        'PROD_PYTHON_SCRIPT="~/markets/app/python/index.py"',
+        '>>',
+        '.env',
+      ]
   - name: node
     entrypoint: yarn
     args: ['install']
-  # - name: 'bash'
-  #   args: ['echo', 'PORT=8080', '>', '.env']
-  # - name: 'bash'
-  #   args:
-  #     [
-  #       'echo',
-  #       'PROD_PYTHON_SCRIPT="~/markets/app/python/index.py"',
-  #       '>>',
-  #       '.env',
-  #     ]
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
