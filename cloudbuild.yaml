@@ -1,0 +1,32 @@
+steps:
+  - name: 'bash'
+    args: ['./cloudbuild.sh']
+  - name: node
+    entrypoint: yarn
+    args: ['install']
+  # - name: 'bash'
+  #   args: ['echo', 'PORT=8080', '>', '.env']
+  # - name: 'bash'
+  #   args:
+  #     [
+  #       'echo',
+  #       'PROD_PYTHON_SCRIPT="~/markets/app/python/index.py"',
+  #       '>>',
+  #       '.env',
+  #     ]
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'compute',
+        'scp',
+        '--project',
+        'markets-jp',
+        '--zone',
+        'asia-northeast1-b',
+        '--port',
+        '49152',
+        '--recurse',
+        '.',
+        'markets-jp:~/markets',
+      ]
