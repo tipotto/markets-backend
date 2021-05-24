@@ -30,5 +30,5 @@ steps:
         '49152',
         '--recurse',
         './markets',
-        'markets-jp:~/',
+        'markets-jp:/home/tipotto404',
       ]
