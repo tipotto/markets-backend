@@ -23,7 +23,8 @@ steps:
         mkdir api &&
         echo "workspace contents >>> " $(ls) &&
         mv /custom_volume/node_modules /custom_volume/.env ./api &&
-        mv *[^api] ./api
+        mv *[^api] ./api &&
+        echo "api dir contents >>> " $(ls ./api)
     volumes:
       - name: 'custom'
         path: '/custom_volume'
@@ -46,4 +47,5 @@ steps:
         './api',
         'markets-jp:~/',
       ]
+    timeout: 600s
     # dir: 'workspace'
