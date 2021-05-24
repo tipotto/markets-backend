@@ -1,14 +1,14 @@
 steps:
-  - id: 'Install dependencies, create .env file'
-    name: node
+  - id: 'Create .env file'
+    name: ubuntu
     entrypoint: 'bash'
     args:
       - -c
       - |
-        yarn install &&
         echo PORT=8080 >> .env &&
         echo PROD_PYTHON_SCRIPT="~/api/app/python/index.py" >> .env &&
-        mv node_modules .env /custom_volume
+        echo ".env >>> " $(cat .env) &&
+        mv .env /custom_volume
     volumes:
       - name: 'custom'
         path: '/custom_volume'
@@ -21,10 +21,9 @@ steps:
       - -c
       - |
         mkdir api &&
-        echo "workspace contents >>> " $(ls) &&
-        mv /custom_volume/node_modules /custom_volume/.env ./api &&
+        mv /custom_volume/.env ./api &&
         mv *[^api] ./api &&
-        echo "api dir contents >>> " $(ls ./api)
+        echo "api dir contents >>> " $(ls -la ./api)
     volumes:
       - name: 'custom'
         path: '/custom_volume'
@@ -47,5 +46,5 @@ steps:
         './api',
         'markets-jp:~/',
       ]
-    timeout: 600s
+    timeout: 1800s
     # dir: 'workspace'
