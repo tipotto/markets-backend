@@ -1,6 +1,7 @@
 steps:
   - id: 'Install dependencies, create .env file'
     name: node
+    entrypoint: 'bash'
     args:
       - -c
       - |
@@ -11,6 +12,7 @@ steps:
 
   - id: 'Integrate files into api directory'
     name: 'ubuntu'
+    entrypoint: 'bash'
     args:
       - -c
       - |
