@@ -28,21 +28,20 @@ steps:
   - id: 'Integrate files into api directory'
     name: 'ubuntu'
     entrypoint: 'bash'
-    args:
-      - -c
-      - |
-        cp -r * ./api &&
-        mv /custom_volume/.env ./api &&
-        echo "api dir contents >>> " $(ls -la ./api)
     # args:
     #   - -c
     #   - |
-    #     mkdir api &&
+    #     cp -r * ./api &&
     #     mv /custom_volume/.env ./api &&
-    #     shopt -s extglob &&
-    #     mv !api ./api &&
-    #     ls * | grep -v "api" | xargs mv -t ./api &&
     #     echo "api dir contents >>> " $(ls -la ./api)
+    args:
+      - -c
+      - |
+        mkdir api &&
+        mv /custom_volume/.env ./api &&
+        shopt -s extglob &&
+        mv ./!(api) ./api &&        
+        echo "api dir contents >>> " $(ls -la ./api)
     volumes:
       - name: 'custom'
         path: '/custom_volume'
