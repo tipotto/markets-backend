@@ -1,10 +1,27 @@
 steps:
-  - name: node
-    entrypoint: yarn
-    args: ['install']
-  - name: 'ubuntu'
-    args: ['bash', './cloudbuild.sh']
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - id: 'Install dependencies, create .env file'
+    name: node
+    args:
+      - -c
+      - |
+        yarn install &&
+        echo PORT=8080 >> .env &&
+        echo PROD_PYTHON_SCRIPT="~/api/app/python/index.py" >> .env &&
+        mv node_modules .env /workspace
+
+  - id: 'Integrate files into api directory'
+    name: 'ubuntu'
+    args:
+      - -c
+      - |
+        echo "Build process started..." &&
+        mkdir api &&
+        mv *[^api] ./api &&
+        mv /workspace/node_modules ./api
+        mv /workspace/.env ./api
+
+  - id: 'Transfer api directory with scp'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
       [
@@ -17,6 +34,7 @@ steps:
         '--port',
         '49152',
         '--recurse',
-        './markets',
-        'markets-jp:/home/tipotto404',
+        './api',
+        'markets-jp:~/',
       ]
+    dir: 'workspace'
