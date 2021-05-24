@@ -33,8 +33,6 @@ steps:
         echo ".env >>> " $(cat .env) &&
         mkdir api &&
         mv /custom_volume/.env ./api &&
-    #   shopt -s extglob &&
-    #   mv !(api) ./api &&
         GLOBIGNORE="api" &&
         mv * ./api &&
         unset GLOBIGNORE &&
