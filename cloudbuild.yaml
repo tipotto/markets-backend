@@ -22,7 +22,7 @@ steps:
       - |
         mkdir api &&
         mv /custom_volume/.env ./api &&
-        mv *[^api] ./api &&
+        ls * | grep -v "api" | xargs mv -t ./api &&
         echo "api dir contents >>> " $(ls -la ./api)
     volumes:
       - name: 'custom'
@@ -44,7 +44,7 @@ steps:
         '49152',
         '--recurse',
         './api',
-        'markets-jp:~/',
+        'markets-jp:/var/www',
       ]
     timeout: 1800s
     # dir: 'workspace'
