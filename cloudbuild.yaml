@@ -33,7 +33,9 @@ steps:
       - |
         mkdir api &&
         mv /custom_volume/.env ./api &&
-        mv *[api] ./api &&
+        GLOBIGNORE="api" &&
+        mv * ./api &&
+        unset GLOBIGNORE &&
         echo "api dir contents >>> " $(ls -la ./api)
     # args:
     #   - -c
