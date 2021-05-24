@@ -10,20 +10,19 @@ steps:
   #     - name: 'custom'
   #       path: '/custom_volume'
 
-  - id: 'Create .env file'
+  - id: 'Create env file'
     name: ubuntu
     entrypoint: 'bash'
     args:
       - -c
       - |
         echo PORT=8080 >> .env &&
-        echo PROD_PYTHON_SCRIPT="~/api/app/python/index.py" >> .env &&
+        echo PROD_PYTHON_SCRIPT="/var/www/api/app/python/index.py" >> .env &&
         echo ".env >>> " $(cat .env) &&
         mv .env /custom_volume
     volumes:
       - name: 'custom'
         path: '/custom_volume'
-    # dir: 'workspace'
 
   - id: 'Integrate files into api directory'
     name: 'ubuntu'
@@ -31,28 +30,18 @@ steps:
     args:
       - -c
       - |
+        echo ".env >>> " $(cat .env) &&
         mkdir api &&
         mv /custom_volume/.env ./api &&
+    #   shopt -s extglob &&
+    #   mv !(api) ./api &&
         GLOBIGNORE="api" &&
         mv * ./api &&
         unset GLOBIGNORE &&
         echo "api dir contents >>> " $(ls -la ./api)
-    # args:
-    #   - -c
-    #   - |
-    #     cp -r * ./api &&
-    #     mv /custom_volume/.env ./api &&
-    # args:
-    #   - -c
-    #   - |
-    #     mkdir api &&
-    #     mv /custom_volume/.env ./api &&
-    #     shopt -s extglob &&
-    #     mv ./!(api) ./api &&
     volumes:
       - name: 'custom'
         path: '/custom_volume'
-    # dir: 'workspace'
 
   - id: 'Transfer api directory with scp'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -72,4 +61,3 @@ steps:
         'markets-jp:/var/www',
       ]
     timeout: 1800s
-    # dir: 'workspace'
