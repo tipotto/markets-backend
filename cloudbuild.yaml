@@ -7,8 +7,8 @@ steps:
       - |
         yarn install &&
         echo PORT=8080 >> .env &&
-        echo PROD_PYTHON_SCRIPT="~/api/app/python/index.py" >> .env &&
-        mv node_modules .env /workspace
+        echo PROD_PYTHON_SCRIPT="~/api/app/python/index.py" >> .env
+    dir: 'workspace'
 
   - id: 'Integrate files into api directory'
     name: 'ubuntu'
@@ -17,7 +17,9 @@ steps:
       - -c
       - |
         mkdir api &&
+        ls l &&
         mv *[^api] ./api
+    dir: 'workspace'
 
   - id: 'Transfer api directory with scp'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
