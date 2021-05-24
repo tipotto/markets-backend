@@ -17,7 +17,7 @@ steps:
       - -c
       - |
         mkdir api &&
-        ls l &&
+        echo "workspace contents >>> " $(ls -l) &&
         mv *[^api] ./api
     dir: 'workspace'
 
