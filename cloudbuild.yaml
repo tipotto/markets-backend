@@ -16,11 +16,8 @@ steps:
     args:
       - -c
       - |
-        echo "Build process started..." &&
         mkdir api &&
-        mv *[^api] ./api &&
-        mv /workspace/node_modules ./api
-        mv /workspace/.env ./api
+        mv *[^api] ./api
 
   - id: 'Transfer api directory with scp'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
