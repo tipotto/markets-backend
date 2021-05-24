@@ -7,8 +7,12 @@ steps:
       - |
         yarn install &&
         echo PORT=8080 >> .env &&
-        echo PROD_PYTHON_SCRIPT="~/api/app/python/index.py" >> .env
-    dir: 'workspace'
+        echo PROD_PYTHON_SCRIPT="~/api/app/python/index.py" >> .env &&
+        mv node_modules .env /custom_volume
+    volumes:
+      - name: 'custom'
+        path: '/custom_volume'
+    # dir: 'workspace'
 
   - id: 'Integrate files into api directory'
     name: 'ubuntu'
@@ -17,9 +21,13 @@ steps:
       - -c
       - |
         mkdir api &&
-        echo "workspace contents >>> " $(ls -l) &&
+        echo "workspace contents >>> " $(ls) &&
+        mv /custom_volume/node_modules /custom_volume/.env ./api &&
         mv *[^api] ./api
-    dir: 'workspace'
+    volumes:
+      - name: 'custom'
+        path: '/custom_volume'
+    # dir: 'workspace'
 
   - id: 'Transfer api directory with scp'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -38,4 +46,4 @@ steps:
         './api',
         'markets-jp:~/',
       ]
-    dir: 'workspace'
+    # dir: 'workspace'
