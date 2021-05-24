@@ -1,4 +1,15 @@
 steps:
+  # - id: 'Install dependencies'
+  #   name: node
+  #   args:
+  #     - -c
+  #     - |
+  #       yarn install &&
+  #       mv node_modules /custom_volume
+  #   volumes:
+  #     - name: 'custom'
+  #       path: '/custom_volume'
+
   - id: 'Create .env file'
     name: ubuntu
     entrypoint: 'bash'
@@ -23,7 +34,7 @@ steps:
         mkdir api &&
         mv /custom_volume/.env ./api &&
         shopt -s extglob &&
-        mv !(api) ./api &&
+        mv !api ./api &&
         echo "api dir contents >>> " $(ls -la ./api)
     # args:
     #   - -c
