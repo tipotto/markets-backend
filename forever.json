@@ -1,0 +1,7 @@
+{
+  "uid": "markets",
+  "append": true,
+  "watch": false,
+  "script": "index.js",
+  "sourceDir": "/var/www/api/"
+}

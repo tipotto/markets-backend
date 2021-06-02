@@ -30,7 +30,6 @@ steps:
     args:
       - -c
       - |
-        echo ".env >>> " $(cat .env) &&
         mkdir api &&
         mv /custom_volume/.env ./api &&
         GLOBIGNORE="api" &&

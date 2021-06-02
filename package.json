@@ -8,7 +8,9 @@
   "scripts": {
     "debug": "node --inspect=0.0.0.0:9229 index.js",
     "develop": "NODE_ENV=development yarn run nodemon -L index.js",
-    "start": "NODE_ENV=production node index.js"
+    "start": "NODE_ENV=production node index.js",
+    "4ever": "NODE_ENV=production forever start forever.json",
+    "4ever:re": "NODE_ENV=production forever restart forever.json"
   },
   "dependencies": {
     "dotenv": "^8.2.0",
