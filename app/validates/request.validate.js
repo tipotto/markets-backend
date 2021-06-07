@@ -57,4 +57,8 @@ module.exports = [
     .isString()
     .isIn(SearchParam.sortOrders)
     .withMessage('Sort order is invalid.'),
+  check('keywordFilter')
+    .isString()
+    .isIn(SearchParam.keywordFilters)
+    .withMessage('Keyword filter is invalid.'),
 ];

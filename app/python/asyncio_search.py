@@ -2,6 +2,7 @@ import traceback
 import asyncio
 import random
 import uuid
+import re
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from constants import common, mercari, rakuma, paypay
@@ -93,9 +94,41 @@ def get_detail_url(const, item):
     return siteUrl + relativePath
 
 
-def extract(const, item):
+def is_each_keyword_contained(keywords, title):
+
+    results = list(map(lambda w: w in title, keywords))
+
+    if False in results:
+        return False
+
+    return True
+
+
+def create_keyword_list(form):
+
+    if form['keywordFilter'] == 'unuse':
+        return None
+
+    keyword = form['keyword']
+
+    # keywordの先頭と末尾の空白を削除
+    removed = keyword.strip()
+
+    # keywordに空白（全角、半角、タブ文字）が含まれているかチェック
+    # 含まれていれば、空白で分割してリストにする
+    # 含まれていなければ、keywordリストを作成
+    if re.search(common.KEYWORD_REG_EXP, removed):
+        return re.split(common.KEYWORD_REG_EXP, removed)
+
+    return [keyword]
+
+
+def extract(const, item, keywords):
     # 商品名の取得
     title = get_title(const, item)
+
+    if keywords is not None and is_each_keyword_contained(keywords, title) is False:
+        return None
 
     # 金額の取得
     price = get_price(const, item)
@@ -121,7 +154,7 @@ def add_query_prefix(query, isPrefix):
     return ('?' + query) if isPrefix is False else ('&' + query)
 
 
-def get_search_query(key, formValue, const):
+def get_search_query(formValue, const):
     return const['query']['search'].format(formValue['page'], formValue['keyword'])
 
 
@@ -132,25 +165,25 @@ def get_price_query(key, value, const):
     return const['query'][key].format(value)
 
 
-def get_rakuma_query_for_product_status(key, valueArr, platform, const, prefix):
-    path = ''
-    if ('all' in valueArr):
-        path = const['query'][key]['all']
+# def get_rakuma_query_for_product_status(key, valueArr, const, prefix):
+#     path = ''
+#     if ('all' in valueArr):
+#         path = const['query'][key]['all']
 
-    else:
-        isPrefix = prefix
-        for status in valueArr:
-            q = const['query'][key][status]
+#     else:
+#         isPrefix = prefix
+#         for status in valueArr:
+#             q = const['query'][key][status]
 
-            path += add_query_prefix(q, isPrefix)
+#             path += add_query_prefix(q, isPrefix)
 
-            if isPrefix is False:
-                isPrefix = True
+#             if isPrefix is False:
+#                 isPrefix = True
 
-    return path
+#     return path
 
 
-def get_query_for_product_status(key, valueArr, platform, const):
+def get_query_for_product_status(key, valueArr, const):
     path = ''
     if ('all' in valueArr):
         # 空文字が返される
@@ -163,54 +196,54 @@ def get_query_for_product_status(key, valueArr, platform, const):
     return path
 
 
-def generate_rakuma_query(form, platform, const):
+# def generate_rakuma_query(form, const):
 
-    query = ''
-    isPrefix = False
-    for key, value in form.items():
-        if key == 'page' or key == 'keyword' or key == 'platforms':
-            continue
+#     query = ''
+#     isPrefix = False
+#     for key, value in form.items():
+#         if key == 'page' or key == 'keyword' or key == 'platforms' or key == 'keywordFilter':
+#             continue
 
-        path = ''
-        if key == 'category':
-            q = get_query_for_category(key, value, const)
+#         path = ''
+#         if key == 'category':
+#             q = get_query_for_category(key, value, const)
 
-            if not q:
-                continue
+#             if not q:
+#                 continue
 
-            path = add_query_prefix(q, isPrefix)
+#             path = add_query_prefix(q, isPrefix)
 
-        elif key == 'minPrice' or key == 'maxPrice':
-            q = get_price_query(key, value, const)
+#         elif key == 'minPrice' or key == 'maxPrice':
+#             q = get_price_query(key, value, const)
 
-            if not q:
-                continue
+#             if not q:
+#                 continue
 
-            path = add_query_prefix(q, isPrefix)
+#             path = add_query_prefix(q, isPrefix)
 
-        elif key == 'productStatus':
-            q = get_rakuma_query_for_product_status(
-                key, value, platform, const, isPrefix)
+#         elif key == 'productStatus':
+#             q = get_rakuma_query_for_product_status(
+#                 key, value, const, isPrefix)
 
-            if not q:
-                continue
+#             if not q:
+#                 continue
 
-            path = q
+#             path = q
 
-        else:
-            q = const['query'][key][value]
+#         else:
+#             q = const['query'][key][value]
 
-            if not q:
-                continue
+#             if not q:
+#                 continue
 
-            path = add_query_prefix(q, isPrefix)
+#             path = add_query_prefix(q, isPrefix)
 
-        if isPrefix is False:
-            isPrefix = True
+#         if isPrefix is False:
+#             isPrefix = True
 
-        query += path
+#         query += path
 
-    return query
+#     return query
 
 
 def get_query_for_category(key, value, const):
@@ -227,10 +260,10 @@ def get_query_for_category(key, value, const):
     return const['query'][key][mainValue][subValue]
 
 
-def generate_query(form, platform, const):
+def generate_query(form, const):
     query = ''
     for key, value in form.items():
-        if key == 'page' or key == 'keyword' or key == 'platforms':
+        if key == 'page' or key == 'keyword' or key == 'platforms' or key == 'keywordFilter':
             continue
 
         path = ''
@@ -241,7 +274,7 @@ def generate_query(form, platform, const):
             path = get_price_query(key, value, const)
 
         elif key == 'productStatus':
-            path = get_query_for_product_status(key, value, platform, const)
+            path = get_query_for_product_status(key, value, const)
 
         else:
             path = const['query'][key][value]
@@ -251,28 +284,30 @@ def generate_query(form, platform, const):
     return query
 
 
-def generate_search_query(form, platform, const):
-    if platform == rakuma.SERVICE_NAME:
-        return generate_rakuma_query(form, platform, const)
+# def generate_search_query(form, platform, const):
+#     if platform == rakuma.SERVICE_NAME:
+#         return generate_rakuma_query(form, const)
 
-    return generate_query(form, platform, const)
+#     return generate_query(form, const)
 
 
 def generate_search_url(form, platform, const):
 
     siteUrl = const['siteUrl']
-    q = get_search_query('search', form, const)
+    q = get_search_query(form, const)
 
     path = siteUrl + q
 
-    query = generate_search_query(form, platform, const)
+    query = generate_query(form, const)
+    # query = generate_search_query(form, platform, const)
 
     return (path if not query else path + query)
 
 
-async def scrape(form, platform, hook=None):
+async def scrape(form, keywords, platform):
 
     const = get_params_by_platform(platform)
+
     headers = generate_headers(const)
     url = generate_search_url(form, platform, const)
 
@@ -285,7 +320,11 @@ async def scrape(form, platform, hook=None):
     try:
         for item in items:
 
-            result = extract(const, item)
+            result = extract(const, item, keywords)
+
+            if result is None:
+                continue
+
             results.append(result)
 
     except Exception:
@@ -298,7 +337,8 @@ async def scrape(form, platform, hook=None):
 
 
 async def parallel_by_gather(form):
-    cors = [scrape(form, p) for p in form['platforms']]
+    keywords = create_keyword_list(form)
+    cors = [scrape(form, keywords, p) for p in form['platforms']]
     await asyncio.gather(*cors)
 
 
@@ -315,26 +355,28 @@ def execute(form):
 # メソッドの動作確認用
 # if __name__ == "__main__":
 
-#     form = {
-#         'category': {'main': 'pet', 'sub': ''},
-#         'query': '日向坂46 斎藤京子',
-#         # platforms: mercari, rakuma, paypay
-#         'platforms': ['paypay'],
-#         'minPrice': '0',
-#         'maxPrice': '0',
-#         'productStatus': ['all', 'brand_new', 'almost_unused', 'no_scratches_or_stains'],
-#         'salesStatus': 'selling',
-#         'deliveryCost': 'all',
-#         'sortOrder': 'asc'
-#     }
+#     # form = {
+#     #     'category': {'main': 'pet', 'sub': ''},
+#     #     'query': '日向坂46 斎藤京子',
+#     #     # platforms: mercari, rakuma, paypay
+#     #     'platforms': ['paypay'],
+#     #     'minPrice': '0',
+#     #     'maxPrice': '0',
+#     #     'productStatus': ['all', 'brand_new', 'almost_unused', 'no_scratches_or_stains'],
+#     #     'salesStatus': 'selling',
+#     #     'deliveryCost': 'all',
+#     #     'sortOrder': 'asc'
+#     # }
 
 #     # execute(form)
 
 #     try:
-#         platform = 'paypay'
-#         const = get_params_by_platform(platform)
-#         url = generate_search_url(form, platform, const)
-#         print('url', url)
+#         # platform = 'paypay'
+#         # const = get_params_by_platform(platform)
+#         # url = generate_search_url(form, platform, const)
+#         is_contained = is_each_keyword_contained(
+#             '渡邉美穂', '日向坂46 渡邉美穂 チェキ')
+#         print('is_contained', is_contained)
 
 #     except Exception as e:
 #         print('Error occurred:', e)

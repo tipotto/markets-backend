@@ -10,6 +10,11 @@ BROWSER_LIST = ['chrome', 'firefox']
 # OS_LIST = ['win', 'mac', 'lin']
 # BROWSER_LIST = ['chrome', 'firefox', 'opera']
 
+# 検索キーワードに関する正規表現
+# 全角スペース、半角スペース、タブ文字（\t）
+# 改行コード（\n, \r）、改ページ（\f）を含む
+KEYWORD_REG_EXP = r'\s+'
+
 HEADERS_DICT = {
     "mac-firefox": {
         "User-Agent": "",

@@ -65,4 +65,5 @@ module.exports = {
   salesStatuses: ['all', 'selling', 'soldout'],
   deliveryCosts: ['all', 'free', 'required'],
   sortOrders: ['asc', 'desc'],
+  keywordFilters: ['use', 'unuse'],
 };

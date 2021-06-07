@@ -8,6 +8,7 @@ module.exports = (req, res, next) => {
     salesStatus,
     deliveryCost,
     sortOrder,
+    keywordFilter,
   } = body;
   body.category = Array.isArray(category) ? category[0] : {};
   body.minPrice = minPrice ? minPrice : 0;
@@ -16,5 +17,7 @@ module.exports = (req, res, next) => {
   body.salesStatus = salesStatus ? salesStatus : 'selling';
   body.deliveryCost = deliveryCost ? deliveryCost : 'all';
   body.sortOrder = sortOrder ? sortOrder : 'asc';
+  body.sortOrder = sortOrder ? sortOrder : 'asc';
+  body.keywordFilter = keywordFilter ? keywordFilter : 'use';
   next();
 };

@@ -14,7 +14,6 @@ module.exports = (req, res) => {
     return;
   }
 
-  // aaa
   let { body } = req;
   const { platforms, deliveryCost } = body;
 

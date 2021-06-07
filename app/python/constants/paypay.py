@@ -12,9 +12,9 @@ DATA = {
     'referer': SITE_URL + '/search/%E6%97%A5%E5%90%91%E5%9D%8246%20%E6%B8%A1%E9%82%89%E7%BE%8E%E7%A9%82?page=1',
     'proxy': PROXY['tor'],
     'query': {
-        'search': '/search/{1}?page={0}',
+        'search': '/search/{1}?sort=ranking&order=asc&page={0}',
+        # 'search': '/search/{1}?page={0}',
         # 'search': '/search/{}',
-        # 'search': '/search/{1}?sort=likeCounts&order=desc&page={0}',
         'category': {
             'all': '',
             'fashion': {

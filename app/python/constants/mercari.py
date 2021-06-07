@@ -12,9 +12,9 @@ DATA = {
     'referer': SITE_URL + '/jp/',
     'proxy': PROXY['tor'],
     'query': {
-        'search': '/jp/search/?page={0}&keyword={1}',
+        'search': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc',
+        # 'search': '/jp/search/?page={0}&keyword={1}',
         # 'search': '/jp/search/?keyword={}',
-        # 'search': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc',
         'category': {
             'all': '&category_root=',
             'fashion': {
