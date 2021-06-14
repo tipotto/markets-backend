@@ -9,7 +9,8 @@ const AccessController = require('./app/controllers/access.controller');
 const AuthorizeController = require('./app/controllers/authorize.controller');
 const RequestController = require('./app/controllers/request.controller');
 const RequestValidator = require('./app/validates/request.validate');
-const SearchController = require('./app/controllers/search.controller.js');
+const SearchController = require('./app/controllers/search.controller');
+const AnalyzeController = require('./app/controllers/analyze.controller');
 
 require('dotenv').config();
 const port = process.env.PORT || 8080;
@@ -50,12 +51,20 @@ if (cluster.isMaster) {
   // app.options("*", AuthorizeController);
 
   app.post('/api/v1/search', AuthorizeController);
+  // app.post('/api/v1/*', AuthorizeController);
 
   app.post(
     '/api/v1/search',
     RequestController,
     RequestValidator,
     SearchController,
+  );
+
+  app.post(
+    '/api/v1/analyze',
+    // RequestController,
+    // RequestValidator,
+    AnalyzeController,
   );
 
   app.listen(port, () =>

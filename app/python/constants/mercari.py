@@ -15,6 +15,14 @@ DATA = {
         'search': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc',
         # 'search': '/jp/search/?page={0}&keyword={1}',
         # 'search': '/jp/search/?keyword={}',
+        'analyze': {
+            'market': '',
+            'price': {
+                'like': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc&status_trading_sold_out=1',
+                # 'asc': '/jp/search/?page={0}&keyword={1}&sort_order=price_asc&status_trading_sold_out=1',
+                # 'desc': '/jp/search/?page={0}&keyword={1}&sort_order=price_desc&status_trading_sold_out=1',
+            },
+        },
         'category': {
             'all': '&category_root=',
             'fashion': {
@@ -95,10 +103,10 @@ DATA = {
             'free': '&shipping_payer_id%5B2%5D=1',
             'required': '&shipping_payer_id%5B1%5D=1'
         },
-        'sortOrder': {
-            'asc': '&sort_order=price_asc',
-            'desc': '&sort_order=price_desc'
-        },
+        # 'sortOrder': {
+        #     'asc': '&sort_order=price_asc',
+        #     'desc': '&sort_order=price_desc'
+        # },
     },
     'items': {'selector': '.items-box'},
     'title': {
@@ -114,4 +122,7 @@ DATA = {
         'selector': 'a',
         'attr': 'href'
     },
+    'likes': {
+        'selector': 'a > div.items-box-body > div.items-box-num > div:last-child > span',
+    }
 }

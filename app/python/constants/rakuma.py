@@ -14,6 +14,14 @@ DATA = {
     'query': {
         'search': '/s?order=desc&page={0}&query={1}&sort=relevance',
         # 'search': '/search/{1}/page/{0}',
+        'analyze': {
+            'market': '',
+            'price': {
+                'like': '/s?order=desc&page={0}&query={1}&sort=like_count&transaction=soldout',
+                'asc': '/s?order=asc&page={0}&query={1}&sort=sell_price&transaction=soldout',
+                'desc': '/s?order=desc&page={0}&query={1}&sort=sell_price&transaction=soldout',
+            },
+        },
         'category': {
             'all': '',
             'fashion': {
@@ -95,10 +103,10 @@ DATA = {
             'free': '&carriage=1',
             'required': '&carriage=2'
         },
-        'sortOrder': {
-            'asc': '&order=asc&sort=sell_price',
-            'desc': '&order=desc&sort=sell_price'
-        },
+        # 'sortOrder': {
+        #     'asc': '&order=asc&sort=sell_price',
+        #     'desc': '&order=desc&sort=sell_price'
+        # },
     },
     'items': {'selector': '.item'},
     'title': {
@@ -113,5 +121,8 @@ DATA = {
     'detail': {
         'selector': '.item-box__image-wrapper > a',
         'attr': 'href'
+    },
+    'likes': {
+        'selector': '',
     }
 }

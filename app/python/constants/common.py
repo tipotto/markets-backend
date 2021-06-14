@@ -4,6 +4,8 @@ HTML_PARSER = "html.parser"
 
 # ALL_ITEM_NUMBER = 100
 # LIKES_ITEM_NUMBER = 30
+PRICE_ASC_DESC_ITEM_NUMBER = 12
+PRICE_LIKES_ITEM_NUMBER = 30
 
 OS_LIST = ['win', 'mac']
 BROWSER_LIST = ['chrome', 'firefox']

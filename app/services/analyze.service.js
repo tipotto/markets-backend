@@ -2,35 +2,35 @@ const { PythonShell } = require('python-shell');
 const PyShellError = require('../exceptions/PyShellError');
 const ParseError = require('../exceptions/ParseError');
 
-module.exports = class SearchService {
+module.exports = class AnalyzeService {
   constructor() {
     if (process.env.NODE_ENV === 'development') {
-      return (this.pyScriptPath = process.env.DEV_PYTHON_SEARCH_SCRIPT);
+      return (this.pyScriptPath = process.env.DEV_PYTHON_ANALYZE_SCRIPT);
     }
-    this.pyScriptPath = process.env.PROD_PYTHON_SEARCH_SCRIPT;
+    this.pyScriptPath = process.env.PROD_PYTHON_ANALYZE_SCRIPT;
   }
 
   static init() {
-    return new SearchService();
+    return new AnalyzeService();
   }
 
-  sortInAscOrder(arr) {
-    return arr.sort((a, b) => (a.price.int < b.price.int ? -1 : 1));
-  }
+  // sortInAscOrder(arr) {
+  //   return arr.sort((a, b) => (a.price.int < b.price.int ? -1 : 1));
+  // }
 
-  sortInDescOrder(arr) {
-    return arr.sort((a, b) => (a.price.int > b.price.int ? -1 : 1));
-  }
+  // sortInDescOrder(arr) {
+  //   return arr.sort((a, b) => (a.price.int > b.price.int ? -1 : 1));
+  // }
 
-  sortArray(arr, sortOrder) {
-    // console.log('3. 検索結果をソート。');
-    if (!arr.length) return arr;
+  // sortArray(arr, sortOrder) {
+  //   // console.log('3. 検索結果をソート。');
+  //   if (!arr.length) return arr;
 
-    if (sortOrder === 'asc') {
-      return this.sortInAscOrder(arr);
-    }
-    return this.sortInDescOrder(arr);
-  }
+  //   if (sortOrder === 'asc') {
+  //     return this.sortInAscOrder(arr);
+  //   }
+  //   return this.sortInDescOrder(arr);
+  // }
 
   // integrateArray(resultArr) {
   //   console.log('3. 検索結果の配列をマージ。');
@@ -55,22 +55,15 @@ module.exports = class SearchService {
 
       pyShell.on('message', async (data) => {
         try {
-          let parsed = JSON.parse(data || 'null');
-          // console.log('result', parsed);
+          let result = JSON.parse(data || 'null');
 
-          // Scrapyの場合
-          // resultsには配列が返ってくる
-          // const sorted = this.sortArray(results, form.sortOrder);
+          // form.platforms.forEach((p) => {
+          //   let likes = result[p]['likes'];
+          // });
 
-          // Asyncioの場合
-          // resultsには多次元配列が返ってくる
-          // そのため、1つの配列にまとめる必要あり
-          // const integrated = this.integrateArray(results);
-          // const sorted = this.sortArray(integrated, form.sortOrder);
-
-          const sorted = this.sortArray(parsed.results, form.sortOrder);
-          parsed.results = sorted;
-          resolve(parsed);
+          // const sorted = this.sortArray(parsed.results, form.sortOrder);
+          // parsed.results = sorted;
+          // resolve(parsed);
         } catch (e) {
           // console.log('JSON parse error:', e);
           reject(new ParseError(e));
@@ -89,7 +82,7 @@ module.exports = class SearchService {
     });
   }
 
-  async search(form) {
+  async analyze(form) {
     return this.scrape(form);
   }
 };
