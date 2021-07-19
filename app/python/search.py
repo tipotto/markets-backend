@@ -2,15 +2,12 @@ import os
 import sys
 import asyncio
 # from asyncio import AbstractEventLoop
+# 絶対パスでのインポートのためにモジュール探索パスを追加
 import json
 pydir_path = os.path.dirname(__file__)
 if pydir_path not in sys.path:
     sys.path.append(pydir_path)
 from services.search_service import SearchService
-# from exceptions.input_error import InputError
-# from types.search_service_type import SearchItemType, SearchFormType
-# from typing import Tuple
-
 
 async def search(form):
     try:
@@ -43,9 +40,6 @@ def main():
         #     'sortOrder': 'asc',
         #     'keywordFilter': 'use'
         # }
-
-        # if not form['keyword']:
-        #     raise InputError('Keyword', 'Keyword is necessary.')
 
         arr = asyncio.run(search(form))
 

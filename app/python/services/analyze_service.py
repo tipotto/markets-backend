@@ -15,6 +15,8 @@ class AnalyzeService(BaseService):
     def __init__(self, const):
         super().__init__(const)
         self.urls = self.generate_search_urls()
+        self.items_num_arr = np.zeros(10)
+        self.likes_num_arr = np.zeros(10)
         self.props = {
             'all_items': [],
             'rounded_price_arr': np.array([]),
@@ -91,8 +93,6 @@ class AnalyzeService(BaseService):
         try:
             kw = self.keyword
             target = self.search_target
-            # pages = [1, 2, 3]
-            # pages = [1]
             pages = [1, 2, 3, 4, 5]
             return [self.site_url + self.query['analyze'][target].format(p, kw) for p in pages]
 
@@ -190,12 +190,12 @@ class AnalyzeService(BaseService):
 
     def extract_popular_price(self, item):
         try:
-            p = self.props
-            all_items_by_type = p['all_items']
-            rounded_price_arr = p['rounded_price_arr']
-            raw_price_arr = p['raw_price_arr']
-            likes_num_arr = p['likes_num_arr']
-            items_by_price_range = p['items_by_price_range']
+            props = self.props
+            all_items_by_type = props['all_items']
+            rounded_price_arr = props['rounded_price_arr']
+            raw_price_arr = props['raw_price_arr']
+            likes_num_arr = props['likes_num_arr']
+            items_by_price_range = props['items_by_price_range']
 
             all_items_by_type.append(item)
 
@@ -225,6 +225,7 @@ class AnalyzeService(BaseService):
                 'all_items': all_items_by_type,
                 'rounded_price_arr': rounded_price_arr,
                 'raw_price_arr': raw_price_arr,
+                # 'items_num_arr': np.array([]),
                 'likes_num_arr': likes_num_arr,
                 'items_by_price_range': items_by_price_range
             }
@@ -234,12 +235,12 @@ class AnalyzeService(BaseService):
 
     def extract_market_price(self, item):
         try:
-            p = self.props
-            all_items_by_type = p['all_items']
-            rounded_price_arr = p['rounded_price_arr']
-            raw_price_arr = p['raw_price_arr']
-            items_num_arr = p['items_num_arr']
-            items_by_price_range = p['items_by_price_range']
+            props = self.props
+            all_items_by_type = props['all_items']
+            rounded_price_arr = props['rounded_price_arr']
+            raw_price_arr = props['raw_price_arr']
+            items_num_arr = props['items_num_arr']
+            items_by_price_range = props['items_by_price_range']
 
             all_items_by_type.append(item)
 
@@ -265,11 +266,14 @@ class AnalyzeService(BaseService):
                 items_num_arr = np.append(items_num_arr, 1)
                 items_by_price_range[rounded_price] = [item]
 
-            self.props['all_items'] = all_items_by_type
-            self.props['rounded_price_arr'] = rounded_price_arr
-            self.props['raw_price_arr'] = raw_price_arr
-            self.props['items_num_arr'] = items_num_arr
-            self.props['items_by_price_range'] = items_by_price_range
+            self.props = {
+                'all_items': all_items_by_type,
+                'rounded_price_arr': rounded_price_arr,
+                'raw_price_arr': raw_price_arr,
+                'items_num_arr': items_num_arr,
+                # 'likes_num_arr': np.array([]),
+                'items_by_price_range': items_by_price_range
+            }
 
         except Exception:
             raise
@@ -281,8 +285,14 @@ class AnalyzeService(BaseService):
             soup = BeautifulSoup(page, util.HTML_PARSER)
             items = soup.select(self.const['items']['selector'])
 
+            platform = self.platform
+            price_type = self.price_type
+            extract = self.extract_item
+            extract_popular_price = self.extract_popular_price
+            extract_market_price = self.extract_market_price
+
             for item in items:
-                i = self.extract_item(item)
+                i = extract(item)
                 data = i['data']
                 err = i['error']
 
@@ -292,10 +302,10 @@ class AnalyzeService(BaseService):
                 if err == 'likes':
                     break
 
-                if self.platform == 'mercari' and self.price_type == 'popular':
-                    self.extract_popular_price(data)
+                if platform == 'mercari' and price_type == 'popular':
+                    extract_popular_price(data)
                 else:
-                    self.extract_market_price(data)
+                    extract_market_price(data)
 
         except Exception:
             raise
@@ -478,13 +488,14 @@ class AnalyzeService(BaseService):
             self.data['items']['all']['list'] = p['all_items']
             self.data['items']['market']['list'] = items_in_market_price
 
+            add_price_comma = self.add_price_comma
             self.data['price'] = {
-                'min': self.add_price_comma(int(min_price)),
-                'max': self.add_price_comma(int(max_price)),
-                'average': self.add_price_comma(int_avg_price),
+                'min': add_price_comma(int(min_price)),
+                'max': add_price_comma(int(max_price)),
+                'average': add_price_comma(int_avg_price),
                 'market': {
-                    'min': self.add_price_comma(int(min_popular_price)),
-                    'max': self.add_price_comma(int(max_popular_price))
+                    'min': add_price_comma(int(min_popular_price)),
+                    'max': add_price_comma(int(max_popular_price))
                 }
             }
 
@@ -546,13 +557,14 @@ class AnalyzeService(BaseService):
             self.data['items']['all']['list'] = p['all_items']
             self.data['items']['market']['list'] = items_in_market_price
 
+            add_price_comma = self.add_price_comma
             self.data['price'] = {
-                'min': self.add_price_comma(int(min_price)),
-                'max': self.add_price_comma(int(max_price)),
-                'average': self.add_price_comma(int_avg_price),
+                'min': add_price_comma(int(min_price)),
+                'max': add_price_comma(int(max_price)),
+                'average': add_price_comma(int_avg_price),
                 'market': {
-                    'min': self.add_price_comma(int(min_market_price)),
-                    'max': self.add_price_comma(int(max_market_price))
+                    'min': add_price_comma(int(min_market_price)),
+                    'max': add_price_comma(int(max_market_price))
                 }
             }
 
@@ -567,10 +579,34 @@ class AnalyzeService(BaseService):
         except Exception:
             raise
 
-    def get_popular_price_detail(self, max_likes_num_index):
-        chart_price_range = np.array([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])
-        likes_num_arr = np.zeros(10)
+    def add_likes_num(self, item, price_range_int_arr):
         try:
+            int_price = item['price']['int']
+
+            # 価格を10の位で四捨五入
+            rounded_int_price = self.round_half_up(int_price, '1E2')
+
+            index = np.where(price_range_int_arr == rounded_int_price)[0][0]
+            self.likes_num_arr[index] += item['likes']
+
+        except Exception:
+            raise
+
+    def add_items_num(self, item, price_range_int_arr):
+        try:
+            int_price = item['price']['int']
+
+            # 価格を10の位で四捨五入
+            rounded_int_price = self.round_half_up(int_price, '1E2')
+            index = np.where(price_range_int_arr == rounded_int_price)[0][0]
+            self.items_num_arr[index] += 1
+
+        except Exception:
+            raise
+
+    def get_popular_price_detail(self, max_likes_num_index):
+        try:
+            chart_price_range = np.array([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])
             p = self.props
 
             # 推奨価格帯（いいね数が最大になる価格帯）を取得
@@ -582,18 +618,21 @@ class AnalyzeService(BaseService):
 
             max_likes_items = p['items_by_price_range'][max_popular_price]
 
-            for item in max_likes_items:
-                int_price = item['price']['int']
+            v_add_likes_num = np.vectorize(self.add_likes_num)
+            v_add_likes_num(max_likes_items, price_range_int_arr)
 
-                # 価格を10の位で四捨五入
-                rounded_int_price = self.round_half_up(int_price, '1E2')
+            # for item in max_likes_items:
+                # int_price = item['price']['int']
 
-                index = np.where(price_range_int_arr == rounded_int_price)[0][0]
-                likes_num_arr[index] += item['likes']
+                # # 価格を10の位で四捨五入
+                # rounded_int_price = self.round_half_up(int_price, '1E2')
+
+                # index = np.where(price_range_int_arr == rounded_int_price)[0][0]
+                # likes_num_arr[index] += item['likes']
 
             self.data['chart']['detail'] = {
                 'priceLabels': price_range_arr_with_comma.tolist(),
-                'likesNums': likes_num_arr.tolist(),
+                'likesNums': self.likes_num_arr.tolist(),
                 'itemsNums': [],
             }
 
@@ -601,9 +640,8 @@ class AnalyzeService(BaseService):
             raise
 
     def get_market_price_detail(self, max_num_index):
-        chart_price_range = np.array([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])
-        items_num_arr = np.zeros(10)
         try:
+            chart_price_range = np.array([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])
             p = self.props
 
             # 推奨価格帯（いいね数が最大になる価格帯）を取得
@@ -615,18 +653,21 @@ class AnalyzeService(BaseService):
 
             market_price_items = p['items_by_price_range'][max_market_price]
 
-            for item in market_price_items:
-                int_price = item['price']['int']
+            v_add_items_num = np.vectorize(self.add_items_num)
+            v_add_items_num(market_price_items, price_range_int_arr)
 
-                # 価格を10の位で四捨五入
-                rounded_int_price = self.round_half_up(int_price, '1E2')
-                index = np.where(price_range_int_arr == rounded_int_price)[0][0]
-                items_num_arr[index] += 1
+            # for item in market_price_items:
+                # int_price = item['price']['int']
+
+                # # 価格を10の位で四捨五入
+                # rounded_int_price = self.round_half_up(int_price, '1E2')
+                # index = np.where(price_range_int_arr == rounded_int_price)[0][0]
+                # items_num_arr[index] += 1
 
             self.data['chart']['detail'] = {
                 'priceLabels': price_range_arr_with_comma.tolist(),
                 'likesNums': [],
-                'itemsNums': items_num_arr.tolist(),
+                'itemsNums': self.items_num_arr.tolist(),
             }
 
         except Exception:

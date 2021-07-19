@@ -59,7 +59,7 @@ class SearchService(BaseService):
             # 詳細ページURLの取得
             detail_url = super().get_detail_url(item)
 
-            result = {
+            return {
                 'id': str(uuid.uuid4()),
                 'title': title,
                 'price': price,
@@ -68,8 +68,6 @@ class SearchService(BaseService):
                 'platform': self.platform,
                 'isFavorite': False
             }
-
-            return result
 
         except Exception:
             raise
@@ -191,14 +189,17 @@ class SearchService(BaseService):
 
             items = soup.select(self.const['items']['selector'])
 
+            extract = self.extract
+            append = self.result.append
+
             for item in items:
 
-                i = self.extract(item)
+                i = extract(item)
 
                 if i is None:
                     continue
 
-                self.result.append(i)
+                append(i)
 
             return {
                 'items': self.result,

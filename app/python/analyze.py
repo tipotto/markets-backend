@@ -8,7 +8,6 @@ pydir_path = os.path.dirname(__file__)
 if pydir_path not in sys.path:
     sys.path.append(pydir_path)
 from services.analyze_service import AnalyzeService
-# from exceptions.input_error import InputError
 
 
 async def analyze(form):
@@ -25,9 +24,6 @@ def main():
     try:
         # loads関数：文字列として受け取ったデータを辞書型に変換（デコード）
         form = json.loads(sys.stdin.readline())
-
-        # if not form['keyword']:
-        #     raise InputError('Keyword', 'Keyword is necessary.')
 
         data = asyncio.run(analyze(form))
         print(json.dumps({
