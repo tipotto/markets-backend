@@ -15,13 +15,22 @@ DATA = {
         'search': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc',
         # 'search': '/jp/search/?page={0}&keyword={1}',
         # 'search': '/jp/search/?keyword={}',
+        # 'analyze': {
+        #     # ソート順：安い順, 販売状況：販売中
+        #     'market': '/jp/search/?page={0}&keyword={1}&sort_order=price_asc&status_on_sale=1',
+        #     # ソート順：いいね順, 販売状況：売り切れ
+        #     'price': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc&status_trading_sold_out=1',
+        #     # 'price': {
+        #     #     'like': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc&status_trading_sold_out=1',
+        #     #     # 'asc': '/jp/search/?page={0}&keyword={1}&sort_order=price_asc&status_trading_sold_out=1',
+        #     #     # 'desc': '/jp/search/?page={0}&keyword={1}&sort_order=price_desc&status_trading_sold_out=1',
+        #     # },
+        # },
         'analyze': {
-            'market': '',
-            'price': {
-                'like': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc&status_trading_sold_out=1',
-                # 'asc': '/jp/search/?page={0}&keyword={1}&sort_order=price_asc&status_trading_sold_out=1',
-                # 'desc': '/jp/search/?page={0}&keyword={1}&sort_order=price_desc&status_trading_sold_out=1',
-            },
+            # ソート順：いいね順, 販売状況：販売中
+            'selling': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc&status_on_sale=1',
+            # ソート順：いいね順, 販売状況：売り切れ
+            'soldout': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc&status_trading_sold_out=1',
         },
         'category': {
             'all': '&category_root=',
@@ -124,5 +133,9 @@ DATA = {
     },
     'likes': {
         'selector': 'a > div.items-box-body > div.items-box-num > div:last-child > span',
+    },
+    'pages': {
+        'selector': '.pager > .pager-next > ul > li:last-child > a',
+        'attr': 'href'
     }
 }

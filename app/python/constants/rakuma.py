@@ -14,13 +14,22 @@ DATA = {
     'query': {
         'search': '/s?order=desc&page={0}&query={1}&sort=relevance',
         # 'search': '/search/{1}/page/{0}',
+        # 'analyze': {
+        #     # ソート順：安い順, 販売状況：販売中
+        #     'market': '/s?order=asc&page={0}&query={1}&sort=sell_price&transaction=selling',
+        #     # ソート順：いいね順, 販売状況：売り切れ
+        #     'price': '/s?order=desc&page={0}&query={1}&sort=like_count&transaction=soldout',
+        #     # 'price': {
+        #     #     'like': '/s?order=desc&page={0}&query={1}&sort=like_count&transaction=soldout',
+        #     #     # 'asc': '/s?order=asc&page={0}&query={1}&sort=sell_price&transaction=soldout',
+        #     #     # 'desc': '/s?order=desc&page={0}&query={1}&sort=sell_price&transaction=soldout',
+        #     # },
+        # },
         'analyze': {
-            'market': '',
-            'price': {
-                'like': '/s?order=desc&page={0}&query={1}&sort=like_count&transaction=soldout',
-                'asc': '/s?order=asc&page={0}&query={1}&sort=sell_price&transaction=soldout',
-                'desc': '/s?order=desc&page={0}&query={1}&sort=sell_price&transaction=soldout',
-            },
+            # ソート順：いいね順, 販売状況：販売中
+            'selling': '/s?order=desc&page={0}&query={1}&sort=like_count&transaction=selling',
+            # ソート順：いいね順, 販売状況：売り切れ
+            'soldout': '/s?order=desc&page={0}&query={1}&sort=like_count&transaction=soldout',
         },
         'category': {
             'all': '',
@@ -124,5 +133,9 @@ DATA = {
     },
     'likes': {
         'selector': '',
+    },
+    'pages': {
+        'selector': '.pagination > .last > a',
+        'attr': 'href'
     }
 }

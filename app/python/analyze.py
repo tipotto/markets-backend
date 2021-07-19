@@ -1,27 +1,71 @@
+import os
 import sys
 import json
-import asyncio_analyze as analyze
+import asyncio
+# from asyncio import AbstractEventLoop
+# 絶対パスでのインポートのためにモジュール探索パスを追加
+pydir_path = os.path.dirname(__file__)
+if pydir_path not in sys.path:
+    sys.path.append(pydir_path)
+from services.analyze_service import AnalyzeService
+# from exceptions.input_error import InputError
+
+
+async def analyze(form):
+    try:
+        platform = form['platform']
+        AnalyzeService.set_class_properties(form)
+        return await AnalyzeService.init(platform).execute()
+
+    except Exception:
+        raise
 
 
 def main():
+    try:
+        # loads関数：文字列として受け取ったデータを辞書型に変換（デコード）
+        form = json.loads(sys.stdin.readline())
 
-    # loads関数：文字列として受け取ったデータを辞書型に変換（デコード）
-    form = json.loads(sys.stdin.readline())
-    keyword = form['keyword']
-    platforms = form['platforms']
+        # if not form['keyword']:
+        #     raise InputError('Keyword', 'Keyword is necessary.')
 
-    if not keyword or len(platforms) == 0:
+        data = asyncio.run(analyze(form))
         print(json.dumps({
-            'status': 'failure',
-            'results': [],
-            'error': 'Necessary parameters, keyword and platforms, are not in the request.'
-        }))
-        return
+            'status': 'success',
+            'result': data,
+            'error': ''
+        }, ensure_ascii=False))
 
-    results = analyze.execute(form)
-    # ensure_ascii=False: JSONの仕様により日本語が文字化けするのを防ぐ
-    print(json.dumps(results, ensure_ascii=False))
+    except Exception:
+        raise
+
+# def test():
+#     form = {
+#         # 'page': 1,
+#         # 'searchType': 'market',
+#         'keyword': 'PS5 本体',
+#         'platforms': ['mercari'],
+#         # 'platforms': ['mercari', 'rakuma', 'paypay'],
+#         'productStatus': ['all'],
+#         'deliveryCost': 'all',
+#         'keywordFilter': 'use',
+#     }
+
+#     try:
+#         if not form['keyword']:
+#             raise InputError('Keyword', 'Keyword is necessary.')
+
+#         loop = asyncio.get_event_loop()
+#         data = loop.run_until_complete(analyze(form))
+#         print('-- main --')
+#         print(data[0])
+
+#     except InputError as e:
+#         print('error', e.message)
+
+#     except Exception as e:
+#         print('error', e)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

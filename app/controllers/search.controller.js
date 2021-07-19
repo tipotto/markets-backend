@@ -35,8 +35,9 @@ module.exports = (req, res) => {
 
   SearchService.init()
     .search(body)
-    .then(({ status, results, error }) => {
-      res.status(200).json(results);
+    .then(({ status, result, error }) => {
+      // console.log('result', result);
+      res.status(200).json(result);
 
       if (status === 'success') {
         httpLogger.info('All processes are successfully completed.');
@@ -45,11 +46,12 @@ module.exports = (req, res) => {
       }
     })
     .catch((e) => {
-      if (e instanceof ParseError) {
-        res.status(502).json({ error: 'Bad Gateway' });
-      } else if (e instanceof PyShellError) {
-        res.status(500).json({ error: 'Internal Server Error' });
-      }
+      // if (e instanceof ParseError) {
+      //   res.status(502).json({ error: 'Bad Gateway' });
+      // } else if (e instanceof PyShellError) {
+      //   res.status(500).json({ error: 'Internal Server Error' });
+      // }
+      res.status(500).json({ error: 'Internal Server Error' });
       httpLogger.error(e);
     });
 };

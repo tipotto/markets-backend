@@ -1,10 +1,21 @@
 const { check } = require('express-validator');
 const ValidateService = require('../services/validate.service');
-const SearchParam = require('./search.param');
+// const SearchParam = require('./search.param');
+const {
+  types,
+  platforms,
+  productStatuses,
+  salesStatuses,
+  deliveryCosts,
+  sortOrders,
+  searchRange,
+} = require('./params/search.param');
 
 module.exports = [
+  check('type').isString().isIn(types).withMessage('Search type is invalid.'),
   check('page')
-    .isInt({ min: 1, max: 10, leading_zeroes: false })
+    .isInt({ leading_zeroes: false })
+    // .isInt({ min: 1, max: 10, leading_zeroes: false })
     .withMessage('Page number is invalid.'),
   check('category')
     .isObject()
@@ -15,12 +26,19 @@ module.exports = [
       'Category should be the object that has specific keys and values.',
     ),
   check('keyword').notEmpty().withMessage('Search keyword is required.'),
+  check('negKeyword')
+    .isString()
+    .withMessage('Negative keyword needs to be string.'),
   check('platforms')
     .isArray({ min: 1, max: 3 })
     .custom((arr) => {
-      return ValidateService.checkArray(SearchParam.platforms, arr);
+      return ValidateService.checkArray(platforms, arr);
     })
     .withMessage('Platforms are required.'),
+  check('searchRange')
+    .isString()
+    .isIn(searchRange)
+    .withMessage('Search range is invalid.'),
   check('minPrice')
     .isInt({ min: 0, max: 99999999, leading_zeroes: false })
     .isCurrency({
@@ -42,23 +60,19 @@ module.exports = [
   check('productStatus')
     .isArray({ min: 1, max: 6 })
     .custom((arr) => {
-      return ValidateService.checkArray(SearchParam.productStatuses, arr);
+      return ValidateService.checkArray(productStatuses, arr);
     })
     .withMessage('Product status is invalid.'),
   check('salesStatus')
     .isString()
-    .isIn(SearchParam.salesStatuses)
+    .isIn(salesStatuses)
     .withMessage('Sales status is invalid.'),
   check('deliveryCost')
     .isString()
-    .isIn(SearchParam.deliveryCosts)
+    .isIn(deliveryCosts)
     .withMessage('Delivery cost is invalid.'),
   check('sortOrder')
     .isString()
-    .isIn(SearchParam.sortOrders)
+    .isIn(sortOrders)
     .withMessage('Sort order is invalid.'),
-  check('keywordFilter')
-    .isString()
-    .isIn(SearchParam.keywordFilters)
-    .withMessage('Keyword filter is invalid.'),
 ];

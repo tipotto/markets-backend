@@ -7,9 +7,11 @@ const systemLogger = logger.system;
 const accessLogger = logger.access;
 const AccessController = require('./app/controllers/access.controller');
 const AuthorizeController = require('./app/controllers/authorize.controller');
-const RequestController = require('./app/controllers/request.controller');
-const RequestValidator = require('./app/validates/request.validate');
+const SearchRequestController = require('./app/controllers/search.request.controller');
+const SearchValidator = require('./app/validates/search.validate');
 const SearchController = require('./app/controllers/search.controller');
+const AnalyzeRequestController = require('./app/controllers/analyze.request.controller');
+const AnalyzeValidator = require('./app/validates/analyze.validate');
 const AnalyzeController = require('./app/controllers/analyze.controller');
 
 require('dotenv').config();
@@ -50,20 +52,19 @@ if (cluster.isMaster) {
   // しかし、悪意あるユーザーによる外部からのブラウザアクセスに備えて残しておく。
   // app.options("*", AuthorizeController);
 
-  app.post('/api/v1/search', AuthorizeController);
-  // app.post('/api/v1/*', AuthorizeController);
+  app.post('/api/v1/*', AuthorizeController);
 
   app.post(
     '/api/v1/search',
-    RequestController,
-    RequestValidator,
+    SearchRequestController,
+    SearchValidator,
     SearchController,
   );
 
   app.post(
     '/api/v1/analyze',
-    // RequestController,
-    // RequestValidator,
+    AnalyzeRequestController,
+    AnalyzeValidator,
     AnalyzeController,
   );
 

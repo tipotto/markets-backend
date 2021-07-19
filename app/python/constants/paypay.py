@@ -15,13 +15,22 @@ DATA = {
         'search': '/search/{1}?sort=ranking&order=asc&page={0}',
         # 'search': '/search/{1}?page={0}',
         # 'search': '/search/{}',
+        # 'analyze': {
+        #     # ソート順：安い順, 販売状況：販売中
+        #     'market': '/search/{1}?open=1&sort=price&order=asc&page={0}',
+        #     # ソート順：いいね順, 販売状況：売り切れ
+        #     'price': '/search/{1}?sold=1&sort=likeCounts&order=desc&page={0}',
+        #     # 'price': {
+        #     #     'like': '/search/{1}?sold=1&sort=likeCounts&order=desc&page={0}',
+        #     #     # 'asc': '/search/{1}?sold=1&sort=price&order=asc&page={0}',
+        #     #     # 'desc': '/search/{1}?sold=1&sort=price&order=desc&page={0}',
+        #     # },
+        # },
         'analyze': {
-            'market': '',
-            'price': {
-                'like': '/search/{1}?sold=1&sort=likeCounts&order=desc&page={0}',
-                'asc': '/search/{1}?sold=1&sort=price&order=asc&page={0}',
-                'desc': '/search/{1}?sold=1&sort=price&order=desc&page={0}',
-            },
+            # ソート順：いいね順, 販売状況：販売中
+            'selling': '/search/{1}?open=1&sort=likeCounts&order=desc&page={0}',
+            # ソート順：いいね順, 販売状況：売り切れ
+            'soldout': '/search/{1}?sold=1&sort=likeCounts&order=desc&page={0}',
         },
         'category': {
             'all': '',
@@ -124,5 +133,9 @@ DATA = {
     },
     'likes': {
         'selector': '',
-    }
+    },
+    'pages': {
+        'selector': '.Pagination__ItemCount-ee0830-4 > .Typography__Component-sc-10fxrsq-0',
+        'attr': ''
+    }    
 }

@@ -17,7 +17,8 @@ steps:
       - -c
       - |
         echo PORT=8080 >> .env &&
-        echo PROD_PYTHON_SCRIPT="/var/www/api/app/python/index.py" >> .env &&
+        echo PROD_PYTHON_SEARCH_SCRIPT="/var/www/api/app/python/search.py" >> .env &&
+        echo PROD_PYTHON_ANALYZE_SCRIPT="/var/www/api/app/python/analyze.py" >> .env &&
         echo ".env >>> " $(cat .env) &&
         mv .env /custom_volume
     volumes:

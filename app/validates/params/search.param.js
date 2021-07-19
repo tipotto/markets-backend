@@ -1,4 +1,5 @@
 module.exports = {
+  types: ['initial', 'next'],
   categoryObjKeys: ['main', 'sub'],
   mainCategories: [
     'all',
@@ -54,6 +55,7 @@ module.exports = {
     'cartoon',
   ],
   platforms: ['mercari', 'rakuma', 'paypay'],
+  searchRange: ['title', 'title-desc'],
   productStatuses: [
     'all',
     'brand_new',
@@ -65,5 +67,4 @@ module.exports = {
   salesStatuses: ['all', 'selling', 'soldout'],
   deliveryCosts: ['all', 'free', 'required'],
   sortOrders: ['asc', 'desc'],
-  keywordFilters: ['use', 'unuse'],
 };
