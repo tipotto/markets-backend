@@ -49,7 +49,7 @@ module.exports = class SearchService extends BaseService {
     return new Promise((resolve, reject) => {
       // console.log('1. python-shellの呼び出し。');
 
-      const start_ms = new Date().getTime();
+      // const start_ms = new Date().getTime();
       // console.log('start time', start_ms);
 
       const shell = new PythonShell(this.pyScriptPath, {
@@ -79,7 +79,7 @@ module.exports = class SearchService extends BaseService {
         }
         // console.log('4. 一通り処理を終了。');
 
-        const elapsed_ms = new Date().getTime() - start_ms;
+        // const elapsed_ms = new Date().getTime() - start_ms;
         // console.log('end time', elapsed_ms);
       });
     });

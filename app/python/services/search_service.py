@@ -1,210 +1,204 @@
 import uuid
 import math
 from bs4 import BeautifulSoup
-from constants import util, mercari, rakuma, paypay
-from services.base_service import BaseService
+from constants import util
+import services.base_service as base
+import asyncio
 
 
-class SearchService(BaseService):
+def extract(item, kws, neg_kws, platform, const):
+    try:
+        # 商品名の取得
+        title = base.get_title(item, platform, const)
 
-    type: str = ''
-    page: int = 1
+        if len(kws) > 0 and base.is_each_keyword_contained(kws, title) is False:
+            return None
 
-    def __init__(self, const):
-        super().__init__(const)
-        self.url = self.generate_search_url()
-        self.result = []
-        self.pagers = 1
+        if len(neg_kws) > 0 and base.is_neg_keyword_contained(neg_kws, title) is True:
+            return None
 
-    @staticmethod
-    def init(platform):
-        try:
-            if platform == mercari.SERVICE_NAME:
-                return SearchService(mercari.DATA)
-            elif platform == rakuma.SERVICE_NAME:
-                return SearchService(rakuma.DATA)
+        # 金額の取得
+        price = base.get_price(item, const)
 
-            return SearchService(paypay.DATA)
+        # 商品画像URLの取得
+        image_url = base.get_image_url(item, const)
 
-        except Exception:
-            raise
+        # 詳細ページURLの取得
+        detail_url = base.get_detail_url(item, platform, const)
 
-    @classmethod
-    def set_class_properties(cls, form):
-        try:
-            super().set_class_properties(form)
-            cls.type = form['type']
-            cls.page = form['page']
+        return {
+            'id': str(uuid.uuid4()),
+            'title': title,
+            'price': price,
+            'imageUrl': image_url,
+            'detailUrl': detail_url,
+            'platform': platform,
+            'isFavorite': False
+        }
 
-        except Exception:
-            raise
+    except Exception:
+        raise
 
-    def extract(self, item):
-        try:
-            # 商品名の取得
-            title = super().get_title(item)
 
-            if self.search_range == 'title' and super().is_each_keyword_contained(title) is False:
-                return None
+def get_price_query(key, value, const):
+    try:
+        if value == 0:
+            return ''
+        return const['query'][key].format(value)
 
-            if len(self.neg_keyword) != 0 and super().is_neg_keyword_contained(title) is True:
-                return None
+    except Exception:
+        raise
 
-            # 金額の取得
-            price = super().get_price(item)
 
-            # 商品画像URLの取得
-            image_url = super().get_image_url(item)
+def get_category_query(category, const):
+    try:
+        main_value = category['main']
+        sub_value = category['sub']
 
-            # 詳細ページURLの取得
-            detail_url = super().get_detail_url(item)
+        if not main_value:
+            return ''
 
-            return {
-                'id': str(uuid.uuid4()),
-                'title': title,
-                'price': price,
-                'imageUrl': image_url,
-                'detailUrl': detail_url,
-                'platform': self.platform,
-                'isFavorite': False
-            }
+        if not sub_value:
+            return const['query']['category'][main_value]
 
-        except Exception:
-            raise
+        return const['query']['category'][main_value][sub_value]
 
-    def get_price_query(self, key, value):
-        try:
-            if value == 0:
-                return ''
-            return self.query[key].format(value)
+    except Exception:
+        raise
 
-        except Exception:
-            raise
 
-    def get_category_query(self, category):
-        try:
-            main_value = category['main']
-            sub_value = category['sub']
+def get_search_query(form, const):
+    try:
+        return const['query']['search'].format(form['page'], form['keyword'])
 
-            if not main_value:
-                return ''
+    except Exception:
+        raise
 
-            if not sub_value:
-                return self.query['category'][main_value]
 
-            return self.query['category'][main_value][sub_value]
+def generate_query(form, const):
+    try:
+        query = ''
+        for key, value in form.items():
+            if key in ['type', 'page', 'keyword', 'negKeyword', 'platforms', 'searchRange', 'sortOrder']:
+                continue
 
-        except Exception:
-            raise
+            path = ''
+            if key == 'category':
+                path = get_category_query(value, const)
 
-    def get_search_query(self):
-        try:
-            page = self.page
-            keyword = self.keyword
-            return self.query['search'].format(page, keyword)
+            elif key == 'minPrice' or key == 'maxPrice':
+                path = get_price_query(key, value, const)
 
-        except Exception:
-            raise
+            elif key == 'productStatus':
+                path = base.get_product_status_query(value, const)
 
-    def generate_query(self):
-        try:
-            query = ''
-            for key, value in self.form.items():
-                if key in ['type', 'page', 'keyword', 'negKeyword', 'platforms', 'searchRange', 'sortOrder']:
-                    continue
+            else:
+                path = const['query'][key][value]
 
-                path = ''
-                if key == 'category':
-                    path = self.get_category_query(value)
+            query += path
 
-                elif key == 'minPrice' or key == 'maxPrice':
-                    path = self.get_price_query(key, value)
+        return query
 
-                elif key == 'productStatus':
-                    path = super().get_product_status_query(value)
+    except Exception:
+        raise
 
-                else:
-                    path = self.query[key][value]
 
-                query += path
+def generate_search_url(form, const):
+    try:
+        siteUrl = const['siteUrl']
+        q = get_search_query(form, const)
+        path = siteUrl + q
+        query = generate_query(form, const)
+        return (path if not query else path + query)
 
-            return query
+    except Exception:
+        raise
 
-        except Exception:
-            raise
 
-    def generate_search_url(self):
-        try:
-            siteUrl = self.const['siteUrl']
-            q = self.get_search_query()
-            path = siteUrl + q
-            query = self.generate_query()
-            return (path if not query else path + query)
+def get_page(pager, platform, form, const):
+    try:
+        if form['type'] == 'next':
+            return 0
 
-        except Exception:
-            raise
+        # これ以降はinitialの場合のみ実行
+        if pager is None:
+            # self.page == 1となる
+            return form['page']
 
-    def get_page(self, pager):
-        try:
-            if self.type == 'next':
-                return 0
+        if platform == 'paypay':
+            page_num_text = pager.contents[-3].replace(",", "")
+            # print('page_num_text', page_num_text)
 
-            # これ以降はinitialの場合のみ実行
-            if pager is None:
-                # self.page == 1となる
-                return self.page
+            page_num = int(page_num_text) / 100
+            # print('page_num', page_num)
 
-            if self.platform == 'paypay':
-                page_num_text = pager.contents[-3].replace(",", "")
-                # print('page_num_text', page_num_text)
+            return page_num if isinstance(page_num, int) else math.ceil(page_num)
 
-                page_num = int(page_num_text) / 100
-                # print('page_num', page_num)
+        last_page_url = pager.get(const['pages']['attr'])
+        # print('last_page_url', last_page_url)
 
-                return page_num if isinstance(page_num, int) else math.ceil(page_num)
+        split_url = last_page_url.rsplit('page=', 1)[-1]
+        # print('split_url', split_url)
 
-            last_page_url = pager.get(self.const['pages']['attr'])
-            # print('last_page_url', last_page_url)
+        last_page_num_text = split_url.split('&', 1)[0]
+        # print('last_page_num_text', last_page_num_text)
 
-            split_url = last_page_url.rsplit('page=', 1)[-1]
-            # print('split_url', split_url)
+        return int(last_page_num_text)
 
-            last_page_num_text = split_url.split('&', 1)[0]
-            # print('last_page_num_text', last_page_num_text)
+    except Exception:
+        raise
 
-            return int(last_page_num_text)
 
-        except Exception:
-            raise
+async def scrape(form, kws, neg_kws, platform):
+    try:
+        const = base.get_params_by_platform(platform)
+        headers = base.generate_headers(const)
 
-    async def scrape(self):
-        try:
-            page = await super().get(self.url, compress=True)
-            # page = await get(url, headers, common.PROXY, compress=True)
+        url = generate_search_url(form, const)
+        page = await base.get(url, headers, compress=True)
+        # page = await get(url, headers, common.PROXY, compress=True)
 
-            soup = BeautifulSoup(page, util.HTML_PARSER)
+        soup = BeautifulSoup(page, util.HTML_PARSER)
 
-            pager = soup.select_one(self.const['pages']['selector'])
-            self.pagers = self.get_page(pager)
+        pager = soup.select_one(const['pages']['selector'])
+        pagers = get_page(pager, platform, form, const)
 
-            items = soup.select(self.const['items']['selector'])
+        items = soup.select(const['items']['selector'])
 
-            extract = self.extract
-            append = self.result.append
+        result = []
+        append = result.append
+        for item in items:
 
-            for item in items:
+            i = extract(item, kws, neg_kws, platform, const)
 
-                i = extract(item)
+            if i is None:
+                continue
 
-                if i is None:
-                    continue
+            append(i)
 
-                append(i)
+        return {
+            'items': result,
+            'pages': pagers
+        }
 
-            return {
-                'items': self.result,
-                'pages': self.pagers
-            }
+    except Exception:
+        raise
 
-        except Exception:
-            raise
+
+async def search(form):
+    try:
+        kws = base.create_keyword_list(form)
+        neg_kws = base.create_neg_keyword_list(form)
+        cors = [scrape(form, kws, neg_kws, p) for p in form['platforms']]
+        return await asyncio.gather(*cors)
+
+    except Exception:
+        raise
+
+
+def execute(form):
+    try:
+        return asyncio.run(search(form))
+
+    except Exception:
+        raise

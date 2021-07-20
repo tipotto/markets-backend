@@ -1,11 +1,23 @@
 import os
 import sys
-import json
+import asyncio
+# from asyncio import AbstractEventLoop
 # 絶対パスでのインポートのためにモジュール探索パスを追加
+import json
 pydir_path = os.path.dirname(__file__)
 if pydir_path not in sys.path:
     sys.path.append(pydir_path)
-import services.search_service as search
+from services.search_service_class import SearchService
+
+async def search(form):
+    try:
+        platforms = form['platforms']
+        SearchService.set_class_properties(form)
+        cors = [SearchService.init(p).scrape() for p in platforms]
+        return await asyncio.gather(*cors)
+
+    except Exception:
+        raise
 
 
 def main():
@@ -29,7 +41,7 @@ def main():
         #     'keywordFilter': 'use'
         # }
 
-        arr = search.execute(form)
+        arr = asyncio.run(search(form))
 
         print(json.dumps({
             'status': 'success',

@@ -1,11 +1,23 @@
 import os
 import sys
 import json
+import asyncio
+# from asyncio import AbstractEventLoop
 # 絶対パスでのインポートのためにモジュール探索パスを追加
 pydir_path = os.path.dirname(__file__)
 if pydir_path not in sys.path:
     sys.path.append(pydir_path)
-import services.analyze_service as analyze
+from services.analyze_service_class import AnalyzeService
+
+
+async def analyze(form):
+    try:
+        platform = form['platform']
+        AnalyzeService.set_class_properties(form)
+        return await AnalyzeService.init(platform).execute()
+
+    except Exception:
+        raise
 
 
 def main():
@@ -13,7 +25,7 @@ def main():
         # loads関数：文字列として受け取ったデータを辞書型に変換（デコード）
         form = json.loads(sys.stdin.readline())
 
-        data = analyze.execute(form)
+        data = asyncio.run(analyze(form))
         print(json.dumps({
             'status': 'success',
             'result': data,
