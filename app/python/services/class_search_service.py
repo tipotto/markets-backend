@@ -2,7 +2,7 @@ import uuid
 import math
 from bs4 import BeautifulSoup
 from constants import util, mercari, rakuma, paypay
-from services.base_service_class import BaseService
+from services.class_base_service import BaseService
 
 
 class SearchService(BaseService):

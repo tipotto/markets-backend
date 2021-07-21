@@ -1,8 +1,8 @@
-const AnalyzeService = require('../services/analyze.service');
+const analyze = require('../services/analyze.service');
 const httpLogger = require('../config/log4js.config').http;
 const { validationResult } = require('express-validator');
-const PyShellError = require('../exceptions/PyShellError');
-const ParseError = require('../exceptions/ParseError');
+// const PyShellError = require('../exceptions/PyShellError');
+// const ParseError = require('../exceptions/ParseError');
 
 module.exports = (req, res) => {
   const errors = validationResult(req);
@@ -14,7 +14,7 @@ module.exports = (req, res) => {
 
   // console.log('form', req.body);
 
-  AnalyzeService.init()
+  analyze
     .analyze(req.body)
     .then(({ status, result, error }) => {
       // console.log('result', result);

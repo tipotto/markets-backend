@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import asyncio
 # 絶対パスでのインポートのためにモジュール探索パスを追加
 pydir_path = os.path.dirname(__file__)
 if pydir_path not in sys.path:
@@ -29,11 +30,11 @@ def main():
         #     'keywordFilter': 'use'
         # }
 
-        arr = search.execute(form)
+        data = asyncio.run(search.search(form))
 
         print(json.dumps({
             'status': 'success',
-            'result': arr,
+            'result': data,
             'error': ''
         }, ensure_ascii=False))
 

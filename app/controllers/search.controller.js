@@ -1,12 +1,10 @@
-const SearchService = require('../services/search.service');
+const search = require('../services/search.service');
 const httpLogger = require('../config/log4js.config').http;
 const { validationResult } = require('express-validator');
-const PyShellError = require('../exceptions/PyShellError');
-const ParseError = require('../exceptions/ParseError');
+// const PyShellError = require('../exceptions/PyShellError');
+// const ParseError = require('../exceptions/ParseError');
 
 module.exports = (req, res) => {
-  // return res.status(422).json({ error: "The request data is invalid." });
-
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     res.status(422).json({ error: 'The request is invalid.' });
@@ -33,7 +31,7 @@ module.exports = (req, res) => {
 
   // console.log('form', body);
 
-  SearchService.init()
+  search
     .search(body)
     .then(({ status, result, error }) => {
       // console.log('result', result);

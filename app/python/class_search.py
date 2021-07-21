@@ -7,7 +7,8 @@ import json
 pydir_path = os.path.dirname(__file__)
 if pydir_path not in sys.path:
     sys.path.append(pydir_path)
-from services.search_service_class import SearchService
+from services.class_search_service import SearchService
+
 
 async def search(form):
     try:

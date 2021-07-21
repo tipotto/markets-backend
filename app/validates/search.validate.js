@@ -1,6 +1,5 @@
 const { check } = require('express-validator');
-const ValidateService = require('../services/validate.service');
-// const SearchParam = require('./search.param');
+const validate = require('../services/validate.service');
 const {
   types,
   platforms,
@@ -20,7 +19,7 @@ module.exports = [
   check('category')
     .isObject()
     .custom((arr) => {
-      return ValidateService.checkObject(arr);
+      return validate.checkObject(arr);
     })
     .withMessage(
       'Category should be the object that has specific keys and values.',
@@ -32,7 +31,7 @@ module.exports = [
   check('platforms')
     .isArray({ min: 1, max: 3 })
     .custom((arr) => {
-      return ValidateService.checkArray(platforms, arr);
+      return validate.checkArray(platforms, arr);
     })
     .withMessage('Platforms are required.'),
   check('searchRange')
@@ -60,7 +59,7 @@ module.exports = [
   check('productStatus')
     .isArray({ min: 1, max: 6 })
     .custom((arr) => {
-      return ValidateService.checkArray(productStatuses, arr);
+      return validate.checkArray(productStatuses, arr);
     })
     .withMessage('Product status is invalid.'),
   check('salesStatus')

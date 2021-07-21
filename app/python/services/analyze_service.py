@@ -1,6 +1,6 @@
-from bs4 import BeautifulSoup
 import uuid
 import asyncio
+from bs4 import BeautifulSoup
 import numpy as np
 from decimal import Decimal, ROUND_HALF_UP
 from constants import util
@@ -165,7 +165,6 @@ def extract_item(item, kws, neg_kws, platform, price_type, const):
 
 def extract_popular_price(item, prop):
     try:
-        # p = props
         all_items_by_type = prop['all_items']
         rounded_price_arr = prop['rounded_price_arr']
         raw_price_arr = prop['raw_price_arr']
@@ -211,7 +210,6 @@ def extract_popular_price(item, prop):
 
 def extract_market_price(item, prop):
     try:
-        # p = props
         all_items_by_type = prop['all_items']
         rounded_price_arr = prop['rounded_price_arr']
         raw_price_arr = prop['raw_price_arr']
@@ -242,14 +240,6 @@ def extract_market_price(item, prop):
             items_num_arr = np.append(items_num_arr, 1)
             items_by_price_range[rounded_price] = [item]
 
-        # props = {
-        #     'all_items': all_items_by_type,
-        #     'rounded_price_arr': rounded_price_arr,
-        #     'raw_price_arr': raw_price_arr,
-        #     'items_num_arr': items_num_arr,
-        #     # 'likes_num_arr': np.array([]),
-        #     'items_by_price_range': items_by_price_range
-        # }
         return {
             'all_items': all_items_by_type,
             'rounded_price_arr': rounded_price_arr,
@@ -270,11 +260,6 @@ async def scrape(url, kws, neg_kws, headers, platform, price_type, const):
         soup = BeautifulSoup(page, util.HTML_PARSER)
         items = soup.select(const['items']['selector'])
 
-        # platform = self.platform
-        # price_type = self.price_type
-        # extract = self.extract_item
-        # extract_popular_price = self.extract_popular_price
-        # extract_market_price = self.extract_market_price
         global props
         p = props
 
@@ -698,18 +683,5 @@ async def analyze(form):
 
         return data
 
-    except Exception:
-        raise
-
-
-def execute(form):
-    try:
-        return asyncio.run(analyze(form))
-        # result = asyncio.run(analyze(form))
-        # return {
-        #     'status': 'success',
-        #     'result': result,
-        #     'error': ''
-        # }
     except Exception:
         raise

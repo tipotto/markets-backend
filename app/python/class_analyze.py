@@ -7,7 +7,7 @@ import asyncio
 pydir_path = os.path.dirname(__file__)
 if pydir_path not in sys.path:
     sys.path.append(pydir_path)
-from services.analyze_service_class import AnalyzeService
+from services.class_analyze_service import AnalyzeService
 
 
 async def analyze(form):

@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import asyncio
 # 絶対パスでのインポートのためにモジュール探索パスを追加
 pydir_path = os.path.dirname(__file__)
 if pydir_path not in sys.path:
@@ -12,8 +13,8 @@ def main():
     try:
         # loads関数：文字列として受け取ったデータを辞書型に変換（デコード）
         form = json.loads(sys.stdin.readline())
+        data = asyncio.run(analyze.analyze(form))
 
-        data = analyze.execute(form)
         print(json.dumps({
             'status': 'success',
             'result': data,

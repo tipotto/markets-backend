@@ -1,5 +1,5 @@
 const { check } = require('express-validator');
-const ValidateService = require('../services/validate.service');
+const validate = require('../services/validate.service');
 const {
   platforms,
   searchTarget,
@@ -34,7 +34,7 @@ module.exports = [
   check('productStatus')
     .isArray({ min: 1, max: 6 })
     .custom((arr) => {
-      return ValidateService.checkArray(productStatuses, arr);
+      return validate.checkArray(productStatuses, arr);
     })
     .withMessage('Product status is invalid.'),
   check('deliveryCost')

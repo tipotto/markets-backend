@@ -4,7 +4,7 @@ import asyncio
 import numpy as np
 from decimal import Decimal, ROUND_HALF_UP
 from constants import util, mercari, rakuma, paypay
-from services.base_service_class import BaseService
+from services.class_base_service import BaseService
 
 
 class AnalyzeService(BaseService):

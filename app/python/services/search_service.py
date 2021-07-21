@@ -1,9 +1,14 @@
 import uuid
 import math
+import numpy as np
 from bs4 import BeautifulSoup
 from constants import util
 import services.base_service as base
 import asyncio
+
+
+result: list = []
+pager: list = []
 
 
 def extract(item, kws, neg_kws, platform, const):
@@ -117,8 +122,8 @@ def generate_search_url(form, const):
 
 def get_page(pager, platform, form, const):
     try:
-        if form['type'] == 'next':
-            return 0
+        # if form['type'] == 'next':
+        #     return 0
 
         # これ以降はinitialの場合のみ実行
         if pager is None:
@@ -160,13 +165,16 @@ async def scrape(form, kws, neg_kws, platform):
 
         soup = BeautifulSoup(page, util.HTML_PARSER)
 
-        pager = soup.select_one(const['pages']['selector'])
-        pagers = get_page(pager, platform, form, const)
+        if form['type'] == 'initial':
+            page_text = soup.select_one(const['pages']['selector'])
+            int_page_num = get_page(page_text, platform, form, const)
+            pager.append(int_page_num)
 
         items = soup.select(const['items']['selector'])
 
-        result = []
-        append = result.append
+        global result
+        arr = result
+        append = arr.append
         for item in items:
 
             i = extract(item, kws, neg_kws, platform, const)
@@ -176,10 +184,7 @@ async def scrape(form, kws, neg_kws, platform):
 
             append(i)
 
-        return {
-            'items': result,
-            'pages': pagers
-        }
+        result = arr
 
     except Exception:
         raise
@@ -190,15 +195,14 @@ async def search(form):
         kws = base.create_keyword_list(form)
         neg_kws = base.create_neg_keyword_list(form)
         cors = [scrape(form, kws, neg_kws, p) for p in form['platforms']]
-        return await asyncio.gather(*cors)
+        await asyncio.gather(*cors)
 
-    except Exception:
-        raise
+        max_page = 0 if len(pager) == 0 else np.amax(np.array(pager))
 
-
-def execute(form):
-    try:
-        return asyncio.run(search(form))
+        return {
+            'items': result,
+            'pages': int(max_page)
+        }
 
     except Exception:
         raise
