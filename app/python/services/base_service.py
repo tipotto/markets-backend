@@ -48,7 +48,7 @@ def create_neg_keyword_list(form):
         if not form['negKeyword']:
             return []
 
-        split_keyword(form['negKeyword'])
+        return split_keyword(form['negKeyword'])
 
     except Exception:
         raise

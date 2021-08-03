@@ -165,10 +165,10 @@ async def scrape(form, kws, neg_kws, platform):
 
         soup = BeautifulSoup(page, util.HTML_PARSER)
 
-        if form['type'] == 'initial':
-            page_text = soup.select_one(const['pages']['selector'])
-            int_page_num = get_page(page_text, platform, form, const)
-            pager.append(int_page_num)
+        # if form['type'] == 'initial':
+        #     page_text = soup.select_one(const['pages']['selector'])
+        #     int_page_num = get_page(page_text, platform, form, const)
+        #     pager.append(int_page_num)
 
         items = soup.select(const['items']['selector'])
 
@@ -197,11 +197,12 @@ async def search(form):
         cors = [scrape(form, kws, neg_kws, p) for p in form['platforms']]
         await asyncio.gather(*cors)
 
-        max_page = 0 if len(pager) == 0 else np.amax(np.array(pager))
+        # max_page = 0 if len(pager) == 0 else np.amax(np.array(pager))
 
         return {
             'items': result,
-            'pages': int(max_page)
+            'pages': 10
+            # 'pages': int(max_page)
         }
 
     except Exception:
