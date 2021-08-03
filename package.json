@@ -10,7 +10,7 @@
     "develop": "NODE_ENV=development yarn run nodemon -L index.js",
     "start": "NODE_ENV=production node index.js",
     "4ever": "NODE_ENV=production forever start forever.json",
-    "4ever:re": "NODE_ENV=production forever restart forever.json"
+    "4ever:re": "NODE_ENV=production forever restart index.js"
   },
   "dependencies": {
     "dotenv": "^8.2.0",

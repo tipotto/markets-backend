@@ -122,9 +122,6 @@ def generate_search_url(form, const):
 
 def get_page(pager, platform, form, const):
     try:
-        # if form['type'] == 'next':
-        #     return 0
-
         # これ以降はinitialの場合のみ実行
         if pager is None:
             # self.page == 1となる
@@ -165,10 +162,10 @@ async def scrape(form, kws, neg_kws, platform):
 
         soup = BeautifulSoup(page, util.HTML_PARSER)
 
-        # if form['type'] == 'initial':
-        #     page_text = soup.select_one(const['pages']['selector'])
-        #     int_page_num = get_page(page_text, platform, form, const)
-        #     pager.append(int_page_num)
+        if form['type'] == 'initial':
+            page_text = soup.select_one(const['pages']['selector'])
+            int_page_num = get_page(page_text, platform, form, const)
+            pager.append(int_page_num)
 
         items = soup.select(const['items']['selector'])
 
@@ -197,12 +194,11 @@ async def search(form):
         cors = [scrape(form, kws, neg_kws, p) for p in form['platforms']]
         await asyncio.gather(*cors)
 
-        # max_page = 0 if len(pager) == 0 else np.amax(np.array(pager))
+        max_page = 0 if len(pager) == 0 else np.amax(np.array(pager))
 
         return {
             'items': result,
-            'pages': 10
-            # 'pages': int(max_page)
+            'pages': int(max_page)
         }
 
     except Exception:
