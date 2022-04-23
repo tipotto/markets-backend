@@ -152,11 +152,8 @@ async def fetch(form, kws, neg_kws, plf):
 async def search(form):
     try:
         util.ignore_aiohttp_ssl_error(asyncio.get_running_loop())
-
         kws = util.create_keyword_list(form)
-        print('kws:', kws)
         neg_kws = util.create_neg_keyword_list(form)
-        print('neg_kws:', neg_kws)
 
         cors = [fetch(form, kws, neg_kws, p) for p in form['platforms']]
         await asyncio.gather(*cors)

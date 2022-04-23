@@ -381,7 +381,6 @@ async def fetch(form, cons, plf, kws, neg_kws):
 async def analyze(form):
     try:
         util.ignore_aiohttp_ssl_error(asyncio.get_running_loop())
-
         plf = form['platform']
         cons = util.get_params_by_platform(plf)
 
