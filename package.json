@@ -1,10 +1,11 @@
 {
-  "name": "markets-server",
+  "name": "markets-backend",
   "version": "1.0.0",
   "repository": "git@github.com:tipotto/markets-server.git",
   "license": "MIT",
-  "author": "tipotto <label1134@gmail.com>",
+  "author": "tipotto <tipotto404@gmail.com>",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "debug": "node --inspect=0.0.0.0:9229 index.js",
     "develop": "NODE_ENV=development yarn run nodemon -L index.js",
@@ -13,9 +14,11 @@
     "4ever:re": "NODE_ENV=production forever restart index.js"
   },
   "dependencies": {
+    "axios": "^0.26.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.10.0",
+    "google-auth-library": "^7.14.1",
     "log4js": "^6.3.0",
     "python-shell": "^2.0.2"
   },

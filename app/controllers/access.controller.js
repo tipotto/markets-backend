@@ -1,6 +1,7 @@
-const accessLogger = require('../config/log4js.config.js').access;
+/* eslint-disable node/no-unsupported-features */
+import { access as accessLogger } from '../config/log4js.config.js';
 
-module.exports = (req, res, next) => {
+const accessController = (req, res, next) => {
   if (!req || !req.method || !req.headers) {
     // next();
     // accessLogger.error("The request doesn't have necessary parameters.");
@@ -14,3 +15,5 @@ module.exports = (req, res, next) => {
   }
   next();
 };
+
+export default accessController;

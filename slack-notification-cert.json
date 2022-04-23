@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "markets-jp",
+  "private_key_id": "7164308b2982816926a738b317e59cc28f520463",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCf/5dvLm0Of62t\nVENWx0vp7R0P7zB6NhhGrRjsMcMzgkF+t9bVtKodywbtxGuMbP5V4ILhSqg1fWsu\nk1Dn47kBHw4rQxGaoeFwkbPC+2Nhe0cd491GFFVPlVHWSxeiNbQ/xIxvpvMctWZj\nMjXONIm8oLhbx6SI3zl5oTL04ex8bcY/6VNLOWoIh/6tER+IJ0o040Et0nahpb9I\nhd45FE2xgZDhNtcSx5T4tJ5GE71Vfedebs3otgQFPTUjmJH1JTUI5VNbAy7xy3fr\nRyi45hctnQGx2hz4IrpdEW722ETwy7JWACkEKJX+2RKktXy57s7LViQgbo22nfcR\n/3cXiJRfAgMBAAECggEADKYLFboI2xWS6Fn5/NlCkhqxqnnRTkgKgUPb7Yg9k0vf\n26Gy9TAUJsjPImrdybswHB/kmOTrCVeB6quwwLRLAuCuoRLrSFs11E1gdbCj+afi\nRmWmL40Z9XGrh5JmKuet+UCTjZwYKhPZJUxp3oRewy+9g1v0EPH8vDXXLm7R4EA5\nX70oIPc3dZZryN0ZSnvT9rcjV9WkxKg4QXgF5+7kdswW5xJC3N4L+YkUwVnjd8Xd\nj9Ensby+qClOm5lq3KZMrtFe69r9c7xDozzxI09JnnOoQxJJRWrPjxA2ZLiiJQhP\nKdKoTDWHG7bb7zp9f40uGzj4FP+puUAmI7/Z3pIm4QKBgQDR445QGcG8i/y2KQi1\nn+xDwGOactIQyD9DlzrKIWxWOyiE1qND+khK3ITF7WqELfyRQf2RIsC536wXgm9U\nGGO3Me2gkXa79IGehlBd1ZtKLy//ZrDCgNrL29raZZyyXthQ1UB6xZAvnvtfDsZZ\nJjc+AR6/lfcNWzDGy1R7JBw7UQKBgQDDJiAFm7vxb81HRDL/pOCH723PmFDCoPkj\n528t/HDBLLKYXIqvDl9UA1SLGFhYjBcV5F/eZypjJ0xMFK75q+FLx78JWEC8YPcR\nGwQdcRTlg8X2pVwIT0D3Qbsg2WvaoNm6Cp17aCiqTZXf8+S6CEtSgwLN1oX+HPoX\nIXYurOmIrwKBgQCOqpG6irdwtOqy21OLOUg8iVJq0m9Nbv/prqsMaAme15lkKg1S\nEJcBI8GwU//aFvQdvHBiLfA4p/vvAv8vd2CYTnzKbvX5LmrI2V1ZWu+yTj7e6Otv\nWmzesvOhDf6kE+oPj9TDXvTyGaud4ooaYOqd398JtSL31itihSVIirQR8QKBgA8I\ny+TCt7sFCwKXjXpGgInYd1RL/sTP1AHhHZ6kWSd4wxWb449TAyMc0pGYwY2o1Up5\neq1Os2RKLcWavlQ72rKU4/HbW7lnmwE1XJ7MDHkWKtUyriFxwaaK6NjCB14jkEKV\n+MX+I0vjiE1lo9R1OSBVOY0UHuSR5O6NRGaaKa+/AoGAJXdLMCkz1drB4kr3uOjJ\nmMuBRCDVBdKgG7ofrEkF0UyRLkKWB8lntbhxtIWHHBR6krcD9oiU1H2Hvf992uOy\nM8aUSvcir8Q+gnM3+mH81LBM8hFZ2jXvbk5+gK4Q44mggvReN0CE5n1ufTHyKIT8\nmGMcmkTnsAkAk4i0Wtcekfg=\n-----END PRIVATE KEY-----\n",
+  "client_email": "slack-notifier@markets-jp.iam.gserviceaccount.com",
+  "client_id": "113282918997290775217",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/slack-notifier%40markets-jp.iam.gserviceaccount.com"
+}

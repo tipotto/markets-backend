@@ -1,16 +1,16 @@
-const { check } = require('express-validator');
-const validate = require('../services/validate.service');
-const {
+/* eslint-disable node/no-unsupported-features */
+import { check } from 'express-validator';
+import { checkArray } from '../services/validate.service.js';
+import {
   platforms,
-  searchTarget,
-  priceType,
   searchRange,
   productStatuses,
+  salesStatuses,
   deliveryCosts,
   sortOrders,
-} = require('./params/analyze.param');
+} from './params/analyze.param.js';
 
-module.exports = [
+const analyzeValidator = [
   check('keyword').notEmpty().withMessage('Search keyword is required.'),
   check('negKeyword')
     .isString()
@@ -19,24 +19,46 @@ module.exports = [
     .isString()
     .isIn(platforms)
     .withMessage('Platform is invalid.'),
-  check('searchTarget')
-    .isString()
-    .isIn(searchTarget)
-    .withMessage('Search target is invalid.'),
-  check('priceType')
-    .isString()
-    .isIn(priceType)
-    .withMessage('Price type is invalid.'),
+  // check('searchTarget')
+  //   .isString()
+  //   .isIn(searchTarget)
+  //   .withMessage('Search target is invalid.'),
+  // check('priceType')
+  //   .isString()
+  //   .isIn(priceType)
+  //   .withMessage('Price type is invalid.'),
   check('searchRange')
     .isString()
     .isIn(searchRange)
     .withMessage('Search range is invalid.'),
+  check('minPrice')
+    .isInt({ min: 0, max: 99999999, leading_zeroes: false })
+    .isCurrency({
+      // symbol: '¥',  // 通貨シンボル
+      require_symbol: false, // 通貨シンボル（$, ¥）が必要かどうか
+      allow_negatives: false, // マイナスの数字はOKかどうか
+      allow_decimal: false, // 小数点はOKかどうか
+    })
+    .withMessage('Min-price is invalid.'),
+  check('maxPrice')
+    .isInt({ min: 0, max: 99999999, leading_zeroes: false })
+    .isCurrency({
+      // symbol: '¥',
+      require_symbol: false,
+      allow_negatives: false,
+      allow_decimal: false,
+    })
+    .withMessage('Max-price is invalid.'),
   check('productStatus')
     .isArray({ min: 1, max: 6 })
     .custom((arr) => {
-      return validate.checkArray(productStatuses, arr);
+      return checkArray(productStatuses, arr);
     })
     .withMessage('Product status is invalid.'),
+  check('salesStatus')
+    .isString()
+    .isIn(salesStatuses)
+    .withMessage('Sales status is invalid.'),
   check('deliveryCost')
     .isString()
     .isIn(deliveryCosts)
@@ -46,3 +68,5 @@ module.exports = [
     .isIn(sortOrders)
     .withMessage('Sort order is invalid.'),
 ];
+
+export default analyzeValidator;

@@ -1,22 +1,35 @@
-PROXY = "http://127.0.0.1:16379"
-
-HTML_PARSER = "html.parser"
-
-# ALL_ITEM_NUMBER = 100
-# LIKES_ITEM_NUMBER = 30
-PRICE_ASC_DESC_ITEM_NUMBER = 12
-PRICE_LIKES_ITEM_NUMBER = 30
-
+PLATFORM_TYPE_WEB = 'web'
+PLATFORM_TYPE_API = 'api'
+HTML_PARSER = 'html.parser'
+LOGGER_NAME = 'refresh_token'
+STATUS_SUCCESS = 'success'
+STATUS_ERROR = 'error'
+CLOUD_FUNCTION_URL = 'https://us-central1-markets-jp.cloudfunctions.net/markets-refresh-token-slack-notifier'
+# PRICE_ASC_DESC_ITEM_NUMBER = 12
+# PRICE_LIKES_ITEM_NUMBER = 30
 OS_LIST = ['win', 'mac']
 BROWSER_LIST = ['chrome', 'firefox']
+SEARCH_BLACKLIST = [
+    'type',
+    'platforms',
+    'sortOrder'
+]
+ANALYZE_BLACKLIST = [
+    'page',
+    'platform',
+    'sortOrder'
+]
+
+# PROXY = "http://127.0.0.1:16379"
 # OS_LIST = ['win', 'mac', 'lin']
 # BROWSER_LIST = ['chrome', 'firefox', 'opera']
+# ALL_ITEM_NUMBER = 100
+# LIKES_ITEM_NUMBER = 30
 
 # 検索キーワードに関する正規表現
 # 全角スペース、半角スペース、タブ文字（\t）
 # 改行コード（\n, \r）、改ページ（\f）を含む
 KEYWORD_REG_EXP = r'\s+'
-
 HEADERS_DICT = {
     "mac-firefox": {
         "User-Agent": "",

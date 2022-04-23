@@ -1,74 +1,87 @@
-const cluster = require('cluster');
-const express = require('express');
-const log4js = require('log4js');
-const numCPUs = require('os').cpus().length;
-const logger = require('./app/config/log4js.config.js');
-const systemLogger = logger.system;
-const accessLogger = logger.access;
-const AccessController = require('./app/controllers/access.controller');
-const AuthorizeController = require('./app/controllers/authorize.controller');
-const SearchRequestController = require('./app/controllers/search.request.controller');
-const SearchValidator = require('./app/validates/search.validate');
-const SearchController = require('./app/controllers/search.controller');
-const AnalyzeRequestController = require('./app/controllers/analyze.request.controller');
-const AnalyzeValidator = require('./app/validates/analyze.validate');
-const AnalyzeController = require('./app/controllers/analyze.controller');
+/* eslint-disable node/no-unsupported-features */
+import cluster from 'cluster';
+import express from 'express';
+import log4js from 'log4js';
+import { cpus } from 'os';
+import { config } from 'dotenv';
+import {
+  system as systemLogger,
+  access as accessLogger,
+} from './app/config/log4js.config.js';
+import accessController from './app/controllers/access.controller.js';
+import authorizeController from './app/controllers/authorize.controller.js';
+import searchRequestController from './app/controllers/search.request.controller.js';
+import searchValidator from './app/validates/search.validate.js';
+import searchController from './app/controllers/search.controller.js';
+import analyzeRequestController from './app/controllers/analyze.request.controller.js';
+import analyzeValidator from './app/validates/analyze.validate.js';
+import analyzeController from './app/controllers/analyze.controller.js';
+import { moldError } from './app/services/util.service.js';
 
-require('dotenv').config();
-const port = process.env.PORT || 8080;
+try {
+  // クラスタリング
+  if (cluster.isMaster) {
+    for (var i = 0; i < cpus().length; i++) {
+      systemLogger.info(`Master : Cluster Fork ${i}`);
+      // Create a worker process
+      cluster.fork();
+    }
 
-// クラスタリング
-if (cluster.isMaster) {
-  for (var i = 0; i < numCPUs; i++) {
-    systemLogger.info(`Master : Cluster Fork ${i}`);
-    // Create a worker process
-    cluster.fork();
-  }
-
-  cluster.on('exit', function (worker, code, signal) {
-    systemLogger.warn(
-      `[${worker.id}] Worker died : [PID ${worker.process.pid}] [Signal ${signal}] [Code ${code}]`,
+    // Workers share the TCP connection in this server
+    cluster.on('exit', function (worker, code, signal) {
+      systemLogger.warn(
+        `[${worker.id}] Worker died : [PID ${worker.process.pid}] [Signal ${signal}] [Code ${code}]`,
+      );
+      cluster.fork();
+    });
+  } else {
+    systemLogger.info(
+      `[${cluster.worker.id}] [PID ${cluster.worker.process.pid}] Worker`,
     );
-    cluster.fork();
-  });
-} else {
-  systemLogger.info(
-    `[${cluster.worker.id}] [PID ${cluster.worker.process.pid}] Worker`,
-  );
-  // Workers share the TCP connection in this server
-  const app = express();
-  app.disable('x-powered-by');
 
-  // parse requests of content-type - application/json
-  app.use(express.json());
+    // loads .env file into process.env
+    config();
 
-  // Expressへのアクセスログを出力
-  app.use(log4js.connectLogger(accessLogger));
-  app.use(AccessController);
+    const app = express();
+    app.disable('x-powered-by');
 
-  // 正規のクライアント（markets.jpのブラウザページ）からのアクセスの場合、
-  // CORS回避のためにAPI（http://localhost:8080）をプロキシとして利用しているため、
-  // Same-Originによりプリフライトリクエストが実行されない。
-  // しかし、悪意あるユーザーによる外部からのブラウザアクセスに備えて残しておく。
-  // app.options("*", AuthorizeController);
+    // parse requests of content-type - application/json
+    app.use(express.json());
 
-  app.post('/api/v1/*', AuthorizeController);
+    // Expressへのアクセスログを出力
+    app.use(log4js.connectLogger(accessLogger));
+    app.use(accessController);
 
-  app.post(
-    '/api/v1/search',
-    SearchRequestController,
-    SearchValidator,
-    SearchController,
-  );
+    // 正規のクライアント（markets.jpのブラウザページ）からのアクセスの場合、
+    // CORS回避のためにAPI（http://localhost:8080）をプロキシとして利用しているため、
+    // Same-Originによりプリフライトリクエストが実行されない。
+    // しかし、悪意あるユーザーによる外部からのブラウザアクセスに備えて残しておく。
+    // app.options("*", authorizeController);
+    app.post('/api/v1/*', authorizeController);
 
-  app.post(
-    '/api/v1/analyze',
-    AnalyzeRequestController,
-    AnalyzeValidator,
-    AnalyzeController,
-  );
+    app.post(
+      '/api/v1/search',
+      searchRequestController,
+      searchValidator,
+      searchController,
+    );
 
-  app.listen(port, () =>
-    systemLogger.info(`Server is running on port ${port}.`),
+    app.post(
+      '/api/v1/analyze',
+      analyzeRequestController,
+      analyzeValidator,
+      analyzeController,
+    );
+
+    const port = process.env.PORT || 8080;
+    app.listen(port, () =>
+      systemLogger.info(`Server is running on port ${port}.`),
+    );
+  }
+} catch (e) {
+  systemLogger.error(
+    `Failed to start server on port ${process.env.PORT || 8080}.\n${moldError(
+      e,
+    )}`,
   );
 }

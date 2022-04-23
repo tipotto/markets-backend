@@ -1,10 +1,11 @@
-const {
+/* eslint-disable node/no-unsupported-features */
+import {
   categoryObjKeys,
   mainCategories,
   subCategories,
-} = require('../validates/params/search.param');
+} from '../validates/params/search.param.js';
 
-const checkObject = (obj) => {
+export const checkObject = (obj) => {
   if (typeof obj !== 'object') return false;
   if (Object.keys(obj).length !== 2) return false;
 
@@ -25,12 +26,10 @@ const checkObject = (obj) => {
   return objArr.includes(false) ? false : true;
 };
 
-const checkArray = (arr, targetArr) => {
+export const checkArray = (arr, targetArr) => {
   if (!targetArr.length) return false;
   const elemArr = targetArr.map((value) => {
     return arr.includes(value);
   });
   return elemArr.includes(false) ? false : true;
 };
-
-module.exports = { checkObject, checkArray };

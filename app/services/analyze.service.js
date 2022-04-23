@@ -1,14 +1,15 @@
-const { PythonShell } = require('python-shell');
-const base = require('./base.service');
+/* eslint-disable node/no-unsupported-features */
+import { scrape, sortArray, moldArray } from './util.service.js';
 
-const moldItems = ({ sortOrder }, { items: { all, market } }) => {
-  // アイテムのソート
-  const sortedAll = base.sortArray(all.list, sortOrder);
-  const sortedMarket = base.sortArray(market.list, sortOrder);
+const moldItems = ({ sortOrder }, data) => {
+  const {
+    items: { all, market },
+  } = data.result;
 
-  // アイテムの成形
-  const moldedAll = base.moldArray(sortedAll);
-  const moldedMarket = base.moldArray(sortedMarket);
+  const sortedAll = sortArray(all.list, sortOrder);
+  const sortedMarket = sortArray(market.list, sortOrder);
+  const moldedAll = moldArray(sortedAll);
+  const moldedMarket = moldArray(sortedMarket);
 
   const allItems = {
     list: sortedAll,
@@ -22,61 +23,23 @@ const moldItems = ({ sortOrder }, { items: { all, market } }) => {
     allIds: moldedMarket.allIds,
   };
 
-  return {
+  data.result.items = {
     all: allItems,
     market: marketItems,
   };
+
+  return data;
 };
 
-const scrape = (form) => {
-  return new Promise((resolve, reject) => {
-    // console.log('1. python-shellの呼び出し');
-
-    // const start_ms = new Date().getTime();
-    // console.log('start time', start_ms);
-
-    let pyScriptPath = null;
-    if (process.env.NODE_ENV === 'development') {
-      pyScriptPath = process.env.DEV_PYTHON_ANALYZE_SCRIPT;
-    } else {
-      pyScriptPath = process.env.PROD_PYTHON_ANALYZE_SCRIPT;
-    }
-
-    const shell = new PythonShell(pyScriptPath, {
-      mode: 'json',
-    });
-
-    // console.log('2. フォームデータをpython側に送信');
-    shell.send(form);
-
-    shell.on('message', async (data) => {
-      try {
-        // console.log('3. データを取得');
-        data.result.items = moldItems(form, data.result);
-        resolve(data);
-      } catch (e) {
-        // console.log('JSON parse error:', e);
-        reject(e);
-      }
-    });
-
-    shell.end((err, code, signal) => {
-      if (err) {
-        // この時点でのエラーにはPythonのトレースバックも含まれるが、
-        // コントローラー側でログに出力する際に削除される。
-        // console.log('Python Shell error', err);
-        reject(err);
-      }
-      // console.log('4. 一通り処理を終了');
-
-      // const elapsed_ms = new Date().getTime() - start_ms;
-      // console.log('end time', elapsed_ms);
-    });
-  });
+const getAnalyzeScriptPath = () => {
+  if (process.env.NODE_ENV === 'development') {
+    return process.env.DEV_PYTHON_ANALYZE_SCRIPT;
+  }
+  return process.env.PROD_PYTHON_ANALYZE_SCRIPT;
 };
 
 const analyze = async (form) => {
-  return scrape(form);
+  return scrape(form, getAnalyzeScriptPath(), moldItems);
 };
 
-module.exports = { analyze };
+export default analyze;

@@ -1,7 +1,8 @@
-const httpLogger = require('../config/log4js.config.js').http;
-const RequestError = require('../exceptions/RequestError');
+/* eslint-disable node/no-unsupported-features */
+import { http as httpLogger } from '../config/log4js.config.js';
+import RequestError from '../exceptions/RequestError.js';
 
-module.exports = (req, res, next) => {
+const authorizeController = (req, res, next) => {
   const checkCustomHeaders = () => {
     // console.log('Custom header check...');
     if (
@@ -89,3 +90,5 @@ module.exports = (req, res, next) => {
     httpLogger.error(e);
   }
 };
+
+export default authorizeController;

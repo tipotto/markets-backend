@@ -1,141 +1,137 @@
+from constants.util import PLATFORM_TYPE_API
+
 SERVICE_NAME = 'mercari'
-SITE_URL = 'https://www.mercari.com'
-
-PROXY = {
-    'tor': 'socks5://127.0.0.1:9000',
-    'luminati': 'http://127.0.0.1:24004',
-}
-
-DATA = {
-    'platform': SERVICE_NAME,
-    'siteUrl': SITE_URL,
-    'referer': SITE_URL + '/jp/',
-    'proxy': PROXY['tor'],
-    'query': {
-        'search': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc',
-        # 'search': '/jp/search/?page={0}&keyword={1}',
-        # 'search': '/jp/search/?keyword={}',
-        # 'analyze': {
-        #     # ソート順：安い順, 販売状況：販売中
-        #     'market': '/jp/search/?page={0}&keyword={1}&sort_order=price_asc&status_on_sale=1',
-        #     # ソート順：いいね順, 販売状況：売り切れ
-        #     'price': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc&status_trading_sold_out=1',
-        #     # 'price': {
-        #     #     'like': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc&status_trading_sold_out=1',
-        #     #     # 'asc': '/jp/search/?page={0}&keyword={1}&sort_order=price_asc&status_trading_sold_out=1',
-        #     #     # 'desc': '/jp/search/?page={0}&keyword={1}&sort_order=price_desc&status_trading_sold_out=1',
-        #     # },
-        # },
-        'analyze': {
-            # ソート順：いいね順, 販売状況：販売中
-            'selling': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc&status_on_sale=1',
-            # ソート順：いいね順, 販売状況：売り切れ
-            'soldout': '/jp/search/?page={0}&keyword={1}&sort_order=like_desc&status_trading_sold_out=1',
+WEB_URL = 'https://jp.mercari.com'
+API_URL = 'https://api.mercari.jp/v2/entities:search'
+AUTH_TOKEN_PATH = '/home/vagrant/workspace/markets/backend/app/python/mercari_cert.json'
+CONS = {
+    'name': SERVICE_NAME,
+    'type': PLATFORM_TYPE_API,
+    'auth_token': AUTH_TOKEN_PATH,
+    'data': {
+        'req': {
+            'url': {
+                'web': WEB_URL,
+                'api': API_URL
+            },
+            'headers': {
+                "Host": "api.mercari.jp",
+                "Sec-Ch-Ua": "\"Chromium\";v=\"96\", \" Not A;Brand\";v=\"99\"",
+                "Sec-Ch-Ua-Mobile": "?0",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.51 Safari/537.36",
+                "Content-Type": "application/json;charset=UTF-8",
+                "Accept": "application/json, text/plain, */*",
+                "X-Platform": "web",
+                "Sec-Ch-Ua-Platform": "\"Linux\"",
+                "Origin": "https://jp.mercari.com",
+                "Sec-Fetch-Site": "cross-site",
+                "Sec-Fetch-Mode": "cors",
+                "Sec-Fetch-Dest": "empty",
+                "Referer": "https://jp.mercari.com/",
+                "Accept-Encoding": "gzip, deflate",
+                "Accept-Language": "en-US,en;q=0.9"
+            },
+            'keys': {
+                'page': 'pageToken',
+                'keyword': 'keyword',
+                'negKeyword': 'excludeKeyword',
+                'searchRange': None,
+                'minPrice': 'priceMin',
+                'maxPrice': 'priceMax',
+                'productStatus': 'itemConditionId',
+                'salesStatus': 'status',
+                'deliveryCost': 'shippingPayerId'
+            },
+            'params': {
+                'api': {
+                    "userId": "",
+                    "pageSize": 120,
+                    "pageToken": "",
+                    "indexRouting": "INDEX_ROUTING_UNSPECIFIED",
+                    "thumbnailTypes": [],
+                    "searchCondition": {
+                        "keyword": "",
+                        "excludeKeyword": "",
+                        "sort": "SORT_SCORE",
+                        "order": "ORDER_DESC",
+                        "status": [],
+                        "sizeId": [],
+                        "categoryId": [],
+                        "brandId": [],
+                        "sellerId": [],
+                        "priceMin": 0,
+                        "priceMax": 0,
+                        "itemConditionId": [],
+                        "shippingPayerId": [],
+                        "shippingFromArea": [],
+                        "shippingMethod": [],
+                        "colorId": [],
+                        "hasCoupon": False,
+                        "attributes": [],
+                        "itemTypes": [],
+                        "skuIds": []
+                    },
+                    "defaultDatasets": [],
+                    "serviceFrom": "suruga"
+                },
+                'web': {
+                    'page': None,
+                    'keyword': None,
+                    'negKeyword': None,
+                    'searchRange': None,
+                    'minPrice': None,
+                    'maxPrice': None,
+                    'productStatus': {
+                        'all': [1, 2, 3, 4, 5],
+                        'brand_new': 1,
+                        'almost_unused': 2,
+                        'no_scratches_or_stains': 3,
+                        'slight_scratches_or_stains': 4,
+                        'noticeable_scratches_or_stains': 5
+                    },
+                    'salesStatus': {
+                        # 'all': [],
+                        'all': ['STATUS_ON_SALE', 'STATUS_SOLD_OUT', 'STATUS_TRADING'],
+                        'selling': ['STATUS_ON_SALE'],
+                        'soldout': ['STATUS_SOLD_OUT']
+                    },
+                    'deliveryCost': {
+                        'all': [1, 2],
+                        'free': [2],
+                        'required': [1]
+                    },
+                    'category': None
+                }
+            }
         },
-        'category': {
-            'all': '&category_root=',
-            'fashion': {
-                'ladies': '&category_root=1&category_child=',
-                'mens': '&category_root=2&category_child=',
-            },
-            'food-beverage-alcohol': {
-                'food': '&category_root=10&category_child=112',
-                'beverage': '&category_root=10&category_child=929',
-                'alcohol': '&category_root=10&category_child=929'
-            },
-            'sports-outdoor': {
-                'sports': '&category_root=8&category_child=',
-                'outdoor': '&category_root=8&category_child=1164'
-            },
-            'diet-health': '&category_root=6&category_child=94',
-            'cosmetic-beauty': '&category_root=6&category_child=',
-            'smartphone-tablet-pc': {
-                'smartphone': '&category_root=7&category_child=100',
-                'tablet-pc': '&category_root=7&category_child=96'
-            },
-            'tv-audio-camera': {
-                'tv': '&category_root=7&category_child=98',
-                'audio': '&category_root=7&category_child=99',
-                'camera': '&category_root=7&category_child=97'
-            },
-            'home-appliances': {
-                'home-appliances': '&category_root=7&category_child=101',
-                'cooking-appliances': '&category_root=7&category_child=102',
-                'health-appliances': '&category_root=7&category_child=1237',
-                'beauty-appliances': '&category_root=7&category_child=1237',
-                'air-conditioning': '&category_root=7&category_child=1243',
-            },
-            'furniture-interior': '&category_root=4&category_child=',
-            'daily-necessities-accessories': '&category_root=4&category_child=',
-            'pet': '&category_root=10&category_child=69',
-            'handmade': '&category_root=9&category_child=',
-            'musical-instrument': '&category_root=1328&category_child=79',
-            'game': {
-                'video-game': '&category_root=5&category_child=76',
-                'trading-card': '&category_root=1328&category_child=82',
-                'card-game': '&category_root=1328&category_child=86&category_grand_child%5B764%5D=1',
-                'board-game': '&category_root=1328&category_child=86&category_grand_child%5B768%5D=1',
-            },
-            'toy-hobby': '&category_root=1328&category_child=',
-            'baby-kids-maternity': '&category_root=3&category_child=',
-            'car-bike': {
-                'car': '&category_root=1318&category_child=1329',
-                'bike': '&category_root=1318&category_child=949',
-                'bicycle': '&category_root=8&category_child=1139&category_grand_child%5B900%5D=1'
-            },
-            'cd-music': '&category_root=5&category_child=75',
-            'dvd': '&category_root=5&category_child=74',
-            'book-magazine-cartoon': {
-                'book': '&category_root=5&category_child=72',
-                'magazine': '&category_root=5&category_child=73',
-                'cartoon': '&category_root=5&category_child=71',
-            },
-            'ticket': '&category_root=1027&category_child='
-        },
-        'minPrice': '&price_min={}',
-        'maxPrice': '&price_max={}',
-        'productStatus': {
-            'all': '&condition_all=1&item_condition_id%5B1%5D=1&item_condition_id%5B2%5D=1&item_condition_id%5B3%5D=1&item_condition_id%5B4%5D=1&item_condition_id%5B5%5D=1&item_condition_id%5B6%5D=1',
-            'brand_new': '&item_condition_id%5B1%5D=1',
-            'almost_unused': '&item_condition_id%5B2%5D=1',
-            'no_scratches_or_stains': '&item_condition_id%5B3%5D=1',
-            'slight_scratches_or_stains': '&item_condition_id%5B4%5D=1',
-            'noticeable_scratches_or_stains': '&item_condition_id%5B5%5D=1'
-        },
-        'salesStatus': {
-            'all': '&status_all=1&status_on_sale=1&status_trading_sold_out=1',
-            'selling': '&status_on_sale=1',
-            'soldout': '&status_trading_sold_out=1'
-        },
-        'deliveryCost': {
-            'all': '&shipping_payer_all=1&shipping_payer_id%5B1%5D=1&shipping_payer_id%5B2%5D=1',
-            'free': '&shipping_payer_id%5B2%5D=1',
-            'required': '&shipping_payer_id%5B1%5D=1'
-        },
-        # 'sortOrder': {
-        #     'asc': '&sort_order=price_asc',
-        #     'desc': '&sort_order=price_desc'
-        # },
+        'res': {
+            'params': {
+                'api': {
+                    'items': {
+                        'key': 'items',
+                        'attr': None
+                    },
+                    'item': None,
+                    'title': {
+                        'key': 'name',
+                        'attr': None
+                    },
+                    'price': {
+                        'key': 'price',
+                        'attr': None
+                    },
+                    'image': {
+                        'key': 'thumbnails',
+                        'attr': (0,)
+                    },
+                    'detail': {
+                        'key': 'id',
+                        'attr': None
+                    },
+                    'pages': None,
+                },
+                'web': None
+            }
+        }
     },
-    'items': {'selector': '.items-box'},
-    'title': {
-        'selector': 'a > div.items-box-body > h3',
-        'attr': ''
-    },
-    'price': {'selector': 'a > div.items-box-body > div.items-box-num > div.items-box-price'},
-    'image': {
-        'selector': 'a > figure.items-box-photo > img',
-        'attr': 'data-src'
-    },
-    'detail': {
-        'selector': 'a',
-        'attr': 'href'
-    },
-    'likes': {
-        'selector': 'a > div.items-box-body > div.items-box-num > div:last-child > span',
-    },
-    'pages': {
-        'selector': '.pager > .pager-next > ul > li:last-child > a',
-        'attr': 'href'
-    }
 }
