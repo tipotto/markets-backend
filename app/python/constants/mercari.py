@@ -3,7 +3,8 @@ from constants.util import PLATFORM_TYPE_API
 SERVICE_NAME = 'mercari'
 WEB_URL = 'https://jp.mercari.com'
 API_URL = 'https://api.mercari.jp/v2/entities:search'
-AUTH_TOKEN_PATH = '/home/vagrant/workspace/markets/backend/app/python/mercari_cert.json'
+# AUTH_TOKEN_PATH = '/home/vagrant/workspace/markets/backend/app/python/mercari_cert.json'
+AUTH_TOKEN_PATH = '/var/www/api/app/python/mercari_cert.json'
 CONS = {
     'name': SERVICE_NAME,
     'type': PLATFORM_TYPE_API,
