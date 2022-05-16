@@ -6,7 +6,8 @@ from aiohttp import ClientSession
 from google.oauth2.id_token import fetch_id_token
 from google.auth.transport.requests import Request
 from config.log_config import log_info, log_error
-from constants.util import STATUS_SUCCESS, CLOUD_FUNCTION_URL
+from constants.util import STATUS_SUCCESS, STATUS_ERROR, CLOUD_FUNCTION_URL
+from constants.mercari import AUTH_TOKEN_PATH
 
 
 async def fetch_json_by_post(url, hdrs, json_dict):
@@ -53,7 +54,7 @@ def get_request():
 
 
 def write_file(json_dict):
-    with open('mercari_cert.json', 'wb') as f:
+    with open(AUTH_TOKEN_PATH, 'wb') as f:
         json_str = json.dumps(json_dict, indent=4, ensure_ascii=False)
         json_bin = json_str.encode("utf-8")
         f.write(json_bin)
@@ -70,17 +71,25 @@ def output_log(res):
     log_info(json['message'])
 
 
-req = get_request()
-bytes_body = req.body
-body_dict = json.loads(bytes_body.decode('utf-8'))
-json_dict = {
-    'dpop': req.headers['dpop'],
-    'searchSessionId': body_dict['searchSessionId']
-}
+try:
+    req = get_request()
+    bytes_body = req.body
+    body_dict = json.loads(bytes_body.decode('utf-8'))
+    json_dict = {
+        'dpop': req.headers['dpop'],
+        'searchSessionId': body_dict['searchSessionId']
+    }
 
-#print('dpop:', json_dict['dpop'])
-#print('searchSessionId:', json_dict['searchSessionId'])
+    #print('dpop:', json_dict['dpop'])
+    #print('searchSessionId:', json_dict['searchSessionId'])
+    write_file(json_dict)
+    res = asyncio.run(notify_status(STATUS_SUCCESS, json_dict))
+    output_log(res)
 
-write_file(json_dict)
-res = asyncio.run(notify_status(STATUS_SUCCESS, json_dict))
-output_log(res)
+except Exception:
+    try:
+        res = asyncio.run(notify_status(STATUS_ERROR, json_dict))
+        output_log(res)
+
+    except Exception as e:
+        output_log(e)
