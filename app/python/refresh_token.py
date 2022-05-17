@@ -6,7 +6,7 @@ from aiohttp import ClientSession
 from google.oauth2.id_token import fetch_id_token
 from google.auth.transport.requests import Request
 from config.log_config import log_info, log_error
-from constants.util import STATUS_SUCCESS, STATUS_ERROR, CLOUD_FUNCTION_URL
+from constants.util import STATUS_SUCCESS, STATUS_ERROR, SLACK_TOKEN_REFRESH_NOTIFICATION_URL
 from constants.mercari import AUTH_TOKEN_PATH
 
 
@@ -21,7 +21,7 @@ async def fetch_json_by_post(url, hdrs, json_dict):
 
 def fetch_google_auth_token():
     request = Request()
-    id_token = fetch_id_token(request, CLOUD_FUNCTION_URL)
+    id_token = fetch_id_token(request, SLACK_TOKEN_REFRESH_NOTIFICATION_URL)
     return id_token
 
 
@@ -34,7 +34,7 @@ async def notify_status(status, json_dict):
         'Authorization': f'Bearer {id_token}',
     }
     json_dict['status'] = status
-    return await fetch_json_by_post(CLOUD_FUNCTION_URL, hdrs, json_dict)
+    return await fetch_json_by_post(SLACK_TOKEN_REFRESH_NOTIFICATION_URL, hdrs, json_dict)
 
 
 def get_request():
@@ -80,8 +80,6 @@ try:
         'searchSessionId': body_dict['searchSessionId']
     }
 
-    #print('dpop:', json_dict['dpop'])
-    #print('searchSessionId:', json_dict['searchSessionId'])
     write_file(json_dict)
     res = asyncio.run(notify_status(STATUS_SUCCESS, json_dict))
     output_log(res)

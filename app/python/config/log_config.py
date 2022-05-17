@@ -1,5 +1,5 @@
 import logging
-from constants.util import LOGGER_NAME
+from constants.util import LOGGER_NAME, DEV_PYTHON_LOG_DIR_PATH, PROD_PYTHON_LOG_DIR_PATH
 
 
 def get_logger(file_path):
@@ -16,8 +16,8 @@ def get_logger(file_path):
 
 
 def log_error(data):
-    get_logger('./log/error.log').error(data)
+    get_logger(PROD_PYTHON_LOG_DIR_PATH + '/error.log').error(data)
 
 
 def log_info(data):
-    get_logger('./log/http.log').info(data)
+    get_logger(PROD_PYTHON_LOG_DIR_PATH + '/http.log').info(data)
