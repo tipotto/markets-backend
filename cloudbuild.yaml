@@ -56,6 +56,6 @@ steps:
         '49152',
         '--recurse',
         './api',
-        'markets-jp:/var/www',
+        'markets-vm-1:/var/www',
       ]
     timeout: 1800s
