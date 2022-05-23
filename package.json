@@ -11,7 +11,8 @@
     "develop": "NODE_ENV=development yarn run nodemon -L index.js",
     "start": "NODE_ENV=production node index.js",
     "4ever": "NODE_ENV=production forever start -w forever.json",
-    "4ever:re": "NODE_ENV=production forever restart -w forever.json"
+    "4ever:re": "NODE_ENV=production forever restart -w forever.json",
+    "prod-install": "NODE_ENV=production yarn install"
   },
   "dependencies": {
     "axios": "^0.26.1",
