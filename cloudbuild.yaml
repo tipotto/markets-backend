@@ -1,17 +1,11 @@
 steps:
-  # - id: 'Install dependencies'
-  #   name: node
-  #   args:
-  #     - -c
-  #     - |
-  #       yarn install &&
-  #       mv node_modules /custom_volume
-  #   volumes:
-  #     - name: 'custom'
-  #       path: '/custom_volume'
+  - id: 'Restore dependencies'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
+    entrypoint: 'bash'
+    args: ['-c', './restore-cache.sh']
 
   - id: 'Create env file'
-    name: ubuntu
+    name: 'ubuntu'
     entrypoint: 'bash'
     args:
       - -c
@@ -19,31 +13,15 @@ steps:
         echo PORT=8080 >> .env &&
         echo PROD_PYTHON_SEARCH_SCRIPT="/var/www/api/app/python/search.py" >> .env &&
         echo PROD_PYTHON_ANALYZE_SCRIPT="/var/www/api/app/python/analyze.py" >> .env &&
-        echo ".env >>> " $(cat .env) &&
-        mv .env /custom_volume
-    volumes:
-      - name: 'custom'
-        path: '/custom_volume'
 
   - id: 'Integrate files into api directory'
     name: 'ubuntu'
     entrypoint: 'bash'
-    args:
-      - -c
-      - |
-        mkdir api &&
-        mv /custom_volume/.env ./api &&
-        GLOBIGNORE="api" &&
-        mv * ./api &&
-        unset GLOBIGNORE &&
-        echo "api dir contents >>> " $(ls -la ./api)
-    volumes:
-      - name: 'custom'
-        path: '/custom_volume'
+    args: ['-c', './build.sh']
 
   - id: 'Transfer api directory with scp'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: gcloud
+    entrypoint: 'gcloud'
     args:
       [
         'compute',
@@ -58,4 +36,17 @@ steps:
         './api',
         'markets-jp:/var/www',
       ]
-    timeout: 1800s
+
+  - id: 'Backup dependencies'
+    name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
+    entrypoint: 'bash'
+    args: ['-c', './save-cache.sh']
+
+options:
+  env:
+    - CACHE_FLAG_PATH=/workspace/cache_flag.txt
+    - CACHE_DIR_PATH=/workspace/node_modules
+    - CACHE_BUCKET_NAME=backend-node-modules
+    - SECONDS_IN_A_MONTH=2629743
+
+timeout: 1800s
