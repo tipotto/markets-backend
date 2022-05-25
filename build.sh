@@ -14,6 +14,13 @@ if [ -e $CACHE_FLAG_PATH ]; then
   NODE_ENV=production npm i --force
 fi
 
+ls .git && rm -r .git
+ls .gitignore && rm .gitignore
+ls .eslintrc.js && rm .eslintrc.js
+ls .prettierrc && rm .prettierrc
+ls README.md && rm README.md
+ls nodemon.json && rm nodemon.json
+
 mkdir api
 GLOBIGNORE="api:cache_flag.txt:cloudbuild.yaml:restore-cache.sh:build.sh:save-cache.sh"
 mv * ./api
