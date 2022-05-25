@@ -15,7 +15,7 @@ if [ -e $CACHE_FLAG_PATH ]; then
 fi
 
 mkdir api
-GLOBIGNORE="api"
+GLOBIGNORE="api:cache_flag.txt:cloudbuild.yaml:restore-cache.sh:build.sh:save-cache.sh"
 mv * ./api
 unset GLOBIGNORE
 echo "api dir content: $(ls -la ./api)" 

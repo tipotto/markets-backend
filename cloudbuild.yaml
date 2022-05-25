@@ -40,7 +40,7 @@ steps:
   - id: 'Backup dependencies'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:alpine'
     entrypoint: 'bash'
-    args: ['-c', './api/save-cache.sh']
+    args: ['-c', './save-cache.sh']
 
 options:
   env:
