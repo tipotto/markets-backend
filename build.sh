@@ -9,8 +9,6 @@ libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxc
 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates \
 fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
 
-echo "Working dir: $(pwd)"
-
 if [ -e $CACHE_FLAG_PATH ]; then
   echo 'Node modules are needed to install.'
   NODE_ENV=production npm i --force

@@ -1,14 +1,11 @@
 #!/bin/bash
 # save-cache: Save the npm cache to GCS.
-# $npm_cache = /home/cache/.npm
 # cloudbuildのボリューム（$npm_cache）からファイルをコピー
 # コピーしたファイルをtgz形式で圧縮
 # GCSのバケットにtgzファイルをコピー
 # GCSのバケットにタイムスタンプをコピー
 
 set -e -u
-
-echo "Working dir: $(pwd)"
 
 if [ -e $CACHE_FLAG_PATH ]; then
   tar -czf /tmp/npm.tgz -C ./api/node_modules .
