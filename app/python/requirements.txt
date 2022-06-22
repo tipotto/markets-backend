@@ -33,7 +33,7 @@ importlib-metadata==4.11.1
 kaitaistruct==0.9
 lxml==4.8.0
 multidict==5.1.0
-numpy==1.21.0
+numpy==1.22.0
 parse==1.19.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
