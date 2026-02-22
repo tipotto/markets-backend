@@ -1,6 +1,7 @@
 # markets.jp (Backend)
 
 <img width="800" alt="markets-top" src="https://github.com/user-attachments/assets/ed1dbf9f-b9e6-4649-968b-4d742146042d">
+<img width="800" alt="markets-top" src="https://github.com/user-attachments/assets/8528d198-7233-4dc6-85be-b2dde8229278">
 <img width="800" alt="markets-items" src="https://github.com/user-attachments/assets/3c000745-c76a-4be9-85c1-2586323551bc">
 
 ## サービス概要
