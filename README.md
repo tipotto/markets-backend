@@ -1,14 +1,20 @@
 # markets.jp
 
-<img width="733" alt="markets-top" src="https://user-images.githubusercontent.com/39334151/110884340-500ea680-8328-11eb-8204-f5ef578e989d.png">
-
-![markets5](https://user-images.githubusercontent.com/39334151/110884366-5c92ff00-8328-11eb-8599-73a725972cb8.png)
-
-<img width="1215" alt="markets-items" src="https://user-images.githubusercontent.com/39334151/110893878-2fe7e300-833a-11eb-9210-97329d73fa0d.png">
+<img width="800" alt="markets-top" src="https://github.com/user-attachments/assets/ed1dbf9f-b9e6-4649-968b-4d742146042d">
+<img width="800" alt="markets-items" src="https://github.com/user-attachments/assets/3c000745-c76a-4be9-85c1-2586323551bc">
 
 ## サービス概要
+「フリマサイト検索」と「フリマサイト分析・比較」という２つの機能を提供しています。  
+SEO対策に注力し、「フリマ 一括検索」などのキーワードで検索結果1位となり、これまでに800名以上の方にご利用いただきました（現在はクローズ済み）。
 
-フリマサイトの一括検索サービス。現在は大手 3 社のサービスに対応。
+様々な検索オプションに対応しており、細かく検索結果をフィルタリングすることができます。
+
+### 主な機能
+#### フリマサイト検索
+フリマサイトを一括検索し、価格順に並び替えて表示するサービスです。
+
+#### フリマサイト分析、比較
+現在の市場や過去の販売データをもとに、各サイトでの相場価格を算出するサービスです。
 
 ## 主な使用技術
 
@@ -27,11 +33,15 @@
 
 ### 対応プラットフォーム
 
-主要な大手 3 社のフリマサービスに対応。
+主要なフリマサービス、ECサイトに対応。
 
 - メルカリ
 - ラクマ
 - PayPay フリマ
+- ヤフオク
+- Amazon
+- 楽天
+- Yahooショッピング
 
 ### 豊富な検索オプション
 
